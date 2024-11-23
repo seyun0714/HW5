@@ -1,0 +1,66 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* 최상단 제목 */
+.title {
+    width: 98%;
+    height: 5%;
+    margin-top: 5px;
+    margin-left: 20px;
+    font-size: 32px;
+    text-align: left
+}
+
+/* file, graph container 포함*/
+.main-container{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* 4칸으로 나뉘는 그래프 컨테이너*/
+.graph-container{
+    width: 96%;
+    height: 96%;
+    margin: 1%;
+}
+
+/* 컨테이너 가로(row) */
+.row{
+    width: 100%;
+    height: 50%;
+}
+
+/* 컨테이너 각 칸의 아이템 */
+.card-body{
+    width: 96%;
+    height: 96%;
+    margin: 2%;
+}
+
+/* 증강 기법 버튼*/
+.aug-button{
+    display:flex;
+    justify-content: space-around;
+}
+
+/* 파일 컨테이너*/
+.file-container{
+    margin: 1%;
+    margin-top:3%;
+    width: 96%;
+    height: 85%;
+    border: 2px dashed black;
+    border-radius: 4px;
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.file-container:hover{
+    background-color: #e0e0e0;
+}
