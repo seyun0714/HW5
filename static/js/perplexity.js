@@ -2,7 +2,7 @@
 $(document).ready(function(){
 
     // 한 칸에 해당하는 크기 설정
-    var cardBody = $("#Chart1").closest(".card-body");
+    var cardBody = $("#perplexity").closest(".card-body");
     const margin = {top: 50, right: 30, bottom: 40, left:50};
     var height = cardBody.height() - margin.left - margin.right;
     var width = cardBody.width() - margin.top - margin.bottom;
@@ -38,7 +38,7 @@ $(document).ready(function(){
 
 
     // 기본 위치 설정
-    const svg = d3.select("#Chart1")
+    const svg = d3.select("#perplexity")
         .append("svg")
         .attr("width", width+margin.left+margin.right)
         .attr("height", height+margin.top+margin.bottom)

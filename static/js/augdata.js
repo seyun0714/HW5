@@ -14,7 +14,7 @@ var csvData = `Q,A,id
 var data = d3.csvParse(csvData);
 
 // 컨테이너 선택 (Chart1 ID를 가진 div)
-var container = d3.select("#Chart3");
+var container = d3.select("#augdata");
 
 // 스크롤 가능한 div 생성
 var scrollableDiv = container.append("div")
