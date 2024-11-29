@@ -8,19 +8,19 @@ def index():
 
 @app.route('/t-sne')
 def t_sne():
-    return "OK"
+    return "t-sne"
 
 @app.route('/perplexity')
-def t_sne():
-    return "OK"
+def perplexity():
+    return "perplexity"
 
 @app.route('/augmentation')
-def t_sne():
-    return "OK"
+def augmentation():
+    return "augmentation"
 
 @app.route('/chatbot')
-def t_sne():
-    return "OK"
+def chatbot():
+    return "chatbot"
 
 if __name__ == '__main__':
     app.run(debug=True)
