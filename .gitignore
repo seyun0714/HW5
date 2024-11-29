@@ -162,5 +162,3 @@ cython_debug/
 
 font/
 static/data
-
-utils
