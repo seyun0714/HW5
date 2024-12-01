@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request
-from utils import calc_perplexity
+from utils import calc_perplexity, tsne_visualization
 
 app = Flask(__name__)
 
@@ -9,7 +9,13 @@ def index():
 
 @app.route('/t-sne')
 def t_sne():
-    return "t-sne"
+    augment_type = request.args.get()
+
+    # 선택 된 증강 기법에 해당하는 데이터 셋 지정
+    data = ""
+    
+    # tsne_visualiztion 함수 내부에서 json 형식으로 값을 return
+    return tsne_visualization(data)
 
 @app.route('/perplexity')
 def perplexity():
@@ -26,7 +32,7 @@ def perplexity():
     model_origin = model_path + "origin_model" # origin 모델 경로
     model_aug = model_path + model_type # aug 모델 경로
 
-    
+    # perplexity 계산
     perplexity_origin = calc_perplexity(model_origin,data)
     perplexity_augmented = calc_perplexity(model_aug,data)
 

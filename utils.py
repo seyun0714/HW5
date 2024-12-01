@@ -1,8 +1,13 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
+from gensim.models import Word2Vec
+from sklearn.manifold import TSNE
+from nltk.tokenize import word_tokenize
+import numpy as np
 import pandas as pd
+import seaborn as sns
+import json
+import torch
 from tqdm import tqdm
-
 
 # def calc_perplexity():
 # flask에서 함수 호출 시 model path와 데이터셋 경로를 제공
@@ -52,3 +57,31 @@ def calc_perplexity(model_id, csv_path):
     ppl = torch.exp(torch.stack(nlls).mean())
 
     return ppl
+
+
+def tsne_visualization(data_path):
+    # 데이터셋 로드
+    data = pd.read_csv(data_path)
+    target_column = 'Q'
+
+    # 데이터셋 토큰화(공백문자 토큰화)
+    tokens = [word_tokenize(text) for text in data[target_column]]
+
+    # Word2Vec 모델 학습
+    model = Word2Vec(sentences=tokens, vector_size=100, window=5, min_count=1, workers=4, sg=1)
+
+    # 벡터 추출
+    words = list(model.wv.index_to_key)
+    vectors = np.array([model.wv[word] for word in words])
+
+    # 차원 축소
+    tsne = TSNE(n_components=2, perplexity=2, random_state=42)
+    reduced_vectors = tsne.fit_transform(vectors)
+
+    # json 형태로 저장
+    tsne_result = [
+        {"word": word, "x": float(coord[0]), "y": float(coord[1])}
+        for word, coord in zip(words, reduced_vectors)
+    ]
+
+    return tsne_result
