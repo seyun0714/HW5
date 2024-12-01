@@ -37,7 +37,7 @@ d3.select("head")
 data.forEach(function(d) {
     // 컬럼 생성
     var col = scrollableDiv.append("div")
-        .attr("class", "col-md-6");
+        .attr("class", "col-12"); // 1열로 설정
 
     // 카드 생성
     var card = col.append("div")
