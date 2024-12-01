@@ -2,10 +2,19 @@
 {% block content %}
 <div class="graph-container">
     <div class="row">
+        <div class="col-12 d-flex align-items-center justify-content-between">
+            <div class="team4-buttons">
+                <button class="btn btn-primary mx-1" id="btn-structure">문장 구조 변경</button>
+                <button class="btn btn-primary mx-1" id="btn-noise">노이즈 추가</button>
+                <button class="btn btn-primary mx-1" id="btn-replace">단어 대체</button>
+                <button class="btn btn-primary mx-1" id="btn-context">문맥적 삽입</button>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
         <div class="card col-lg-6">
-            <div class="aug-button"></div>
             <div class="card-body">
-                <div id="perplextiy"></div>
+                <div id="perplexity"></div>
             </div>
         </div>
         <div class="card col-lg-6">
@@ -14,7 +23,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row mt-3">
         <div class="card col-lg-4">
             <div class="card-body">
                 <div id="augdata"></div>
@@ -33,9 +42,16 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ url_for('static', filename='js/perplextiy.js') }}"></script>
+<script src="{{ url_for('static', filename='js/perplexity.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tsne.js') }}"></script>
 <script src="{{ url_for('static', filename='js/augdata.js') }}"></script>
 <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 <script src="{{ url_for('static', filename='js/utility.js') }}"></script>
+<script>
+    // 버튼 클릭 시 이벤트 핸들러
+    document.getElementById('btn-structure').addEventListener('click', () => updatePerplexity('structure'));
+    document.getElementById('btn-noise').addEventListener('click', () => updatePerplexity('noise'));
+    document.getElementById('btn-replace').addEventListener('click', () => updatePerplexity('replace'));
+    document.getElementById('btn-context').addEventListener('click', () => updatePerplexity('context'));
+</script>
 {% endblock %}
