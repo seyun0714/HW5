@@ -17,7 +17,7 @@ def calc_perplexity(model_id, csv_path):
     # csv_path = "static/data/dataset.csv" # 임의 지정 데이터
     data = pd.read_csv(csv_path)
 
-    # csv 파일 포맷에 q열와 a열이 있다고 가정.
+    # csv 파일 포맷에 q와 a 열이 있다고 가정.
     # 모델 학습할 때 사용하는 텍스트 포멧과 동일하게 만들어야 함
     texts = (data['Q']+" "+data['A']).tolist()
 
