@@ -36,57 +36,79 @@ $(document).ready(function () {
         .attr("font-size", "12px")
         .text("perplexity");
 
-    const y = d3.scaleLinear().domain([0, 10.0]).range([height, 0]);
+    // Todo: perplexity 지표 불러오기
+    // 임시로 로컬 데이터 선언
+    var data1 = [
+        {name: "base", value: 4.0},
+        {name: "base2", value: 4.6},
+        {name: "문장 구조 변경", value: 5.0}
+    ];
+    var data2 = [
+        {name: "base", value: 4.0},
+        {name: "base2", value: 4.6},
+        {name: "노이즈 추가", value: 7.3}
+    ];
+    var data3 = [
+        {name: "base", value: 4.0},
+        {name: "base2", value: 4.6},
+        {name: "단어 대체", value: 6.1}
+    ];
+    var data4 = [
+        {name: "base", value: 4.0},
+        {name: "base2", value: 4.6},
+        {name: "문맥적 삽입", value: 5.7}
+    ];
 
-    svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
+    var baseData = [];
+    var perplexityData = [];
 
-    // updatePerplexity 함수를 정의하고 window 객체에 바인딩
-    function updatePerplexity(type) {
-        // API 호출
-        fetch(`/perplexity?type=${type}`)
-            .then(response => response.json())
-            .then(data => {
-                const x = d3.scaleBand()
-                    .domain(data.map(d => d.name))
-                    .range([0, width])
-                    .padding(0.4);
+    fetch("/perplexity")
+    .then(data => {
+        // 한번에 그냥 다 갖고오기
+        baseData = data;
+        console.log(baseData);
+    });
 
-                // x축 업데이트
-                svg.selectAll(".x-axis").remove();
-                svg.append("g")
-                    .attr("class", "x-axis")
-                    .attr("transform", `translate(0,${height})`)
-                    .call(d3.axisBottom(x));
+    let x = d3.scaleBand()
+        .domain(data1.map(d => d.name))
+        .range([0, width])
+        .padding(0.4);
 
-                // 막대그래프 업데이트
-                svg.selectAll("rect")
-                    .data(data)
-                    .join("rect")
-                    .attr("x", d => x(d.name))
-                    .attr("y", d => y(d.value))
-                    .attr("width", x.bandwidth())
-                    .attr("height", d => height - y(d.value))
-                    .attr("fill", "#69b3a2");
+    const y = d3.scaleLinear()
+        .domain([0, 10.0])
+        .range([height, 0]);
 
-                // 데이터 이름 표시
-                svg.selectAll(".label").remove();
-                svg.selectAll(".label")
-                    .data(data)
-                    .enter()
-                    .append("text")
-                    .attr("class", "label")
-                    .attr("x", d => x(d.name) + x.bandwidth() / 2)
-                    .attr("y", d => y(d.value) - 5) // 막대 위에 표시
-                    .attr("text-anchor", "middle")
-                    .attr("font-size", "12px")
-                    .text(d => d.name); // 데이터 이름 표시
-            })
-            .catch(error => console.error("Error fetching data:", error));
+    
+
+    // 증강 기법 버튼 클릭 시 변경
+    function update(data) {
+        x = d3.scaleBand()
+            .domain(data.map(d => d.name))
+            .range([0, width])
+            .padding(0.4);
+
+        y.domain([0, 10.0]);
+
+        svg.select(".x-axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x));
+
+        svg.select(".y-axis")
+            .transition()
+            .duration(1000)
+            .call(d3.axisLeft(y));
+
+        svg.selectAll("rect")
+            .data(data)
+            .join("rect")
+            .transition()
+            .duration(1000)
+            .attr("x", d => x(d.name))
+            .attr("y", d => y(d.value))
+            .attr("width", x.bandwidth())
+            .attr("height", d => Math.max(0, height - y(d.value)))
+            .attr("fill", "#69b3a2")
     }
-
-    // 전역 범위로 노출
-    window.updatePerplexity = updatePerplexity;
-
-    // 기본 데이터 로드
-    updatePerplexity('structure');
+    // 초기 로드
+    update(data1);
 });
