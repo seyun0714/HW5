@@ -8,15 +8,15 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-# @app.route('/t-sne')
-# def t_sne():
-#     augment_type = request.args.get()
+@app.route('/t-sne')
+def t_sne():
+    augment_type = request.json.get('augType')
 
-#     # 선택 된 증강 기법에 해당하는 데이터 셋 지정
-#     data = ""
+    # 선택 된 증강 기법에 해당하는 데이터 셋 지정
+    data = ""
     
-#     # tsne_visualiztion 함수 내부에서 json 형식으로 값을 return
-#     return tsne_visualization(data)
+    # tsne_visualiztion 함수 내부에서 json 형식으로 값을 return
+    return tsne_visualization(data) 
 
 @app.route('/perplexity', methods=['POST'])
 def perplexity():

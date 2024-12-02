@@ -27,6 +27,7 @@ html, body {
     height: 100%;
     display: flex;
     justify-content: center;
+
 }
 
 .my-btn{
@@ -59,10 +60,11 @@ html, body {
     max-height: 50%;
 }
 
+
 /* 컨테이너 각 칸의 아이템 */
 .card-body{
-    width: 96%;
-    height: 96%;
+    width:96%;
+    height:270px;
     max-height: 96%;
     margin: 2%;
     flex-shrink: 0;
