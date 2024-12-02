@@ -92,7 +92,17 @@ $(document).ready(function(){
         {name: "base2", value: 4.6},
         {name: "문맥적 삽입", value: 5.7}
     ];
-     
+
+    var baseData = [];
+    var perplexityData = [];
+
+    fetch("/perplexity")
+    .then(data => {
+        // 한번에 그냥 다 갖고오기
+        baseData = data;
+        console.log(baseData);
+    });
+
     let x = d3.scaleBand()
         .domain(data1.map(d => d.name))
         .range([0, width])
@@ -102,16 +112,7 @@ $(document).ready(function(){
         .domain([0, 10.0])
         .range([height, 0]);
 
-    // x축 생성
-    svg.append("g")
-        .attr("class", "x-axis")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
-
-    // y축 생성
-    svg.append("g")
-        .call(d3.axisLeft(y))
-        .attr("class", "y-axis");
+    
 
     // 증강 기법 버튼 클릭 시 변경
     function update(data) {
@@ -120,11 +121,18 @@ $(document).ready(function(){
             .range([0, width])
             .padding(0.4);
 
+        y.domain([0, 10.0]);
+
         svg.select(".x-axis")
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(x));
 
-        var u = svg.selectAll("rect")
+        svg.select(".y-axis")
+            .transition()
+            .duration(1000)
+            .call(d3.axisLeft(y));
+
+        svg.selectAll("rect")
             .data(data)
             .join("rect")
             .transition()
@@ -132,9 +140,9 @@ $(document).ready(function(){
             .attr("x", d => x(d.name))
             .attr("y", d => y(d.value))
             .attr("width", x.bandwidth())
-            .attr("height", d => height - y(d.value))
+            .attr("height", d => Math.max(0, height - y(d.value)))
             .attr("fill", "#69b3a2")
-        }
+    }
     // 초기 로드
     update(data1);
 });
