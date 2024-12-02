@@ -1,52 +1,20 @@
 // Perplexity 그래프
-$(document).ready(function(){
+$(document).ready(function () {
+    // 초기 위치 및 SVG 생성
+    const cardBody = $("#perplexity").closest(".card-body");
+    const margin = { top: 50, right: 30, bottom: 40, left: 50 };
+    const height = cardBody.height() - margin.left - margin.right;
+    const width = cardBody.width() - margin.top - margin.bottom;
 
-    // 한 칸에 해당하는 크기 설정
-    var cardBody = $("#perplexity").closest(".card-body");
-    const margin = {top: 50, right: 30, bottom: 40, left:50};
-    var height = cardBody.height() - margin.left - margin.right;
-    var width = cardBody.width() - margin.top - margin.bottom;
-
-    // 증강 기법 선택 버튼 생성
-    d3.select(".aug-button")
-    .append("button")
-    .text("문장 구조 변경")
-    .on("click", function() {
-        update(data1);
-    });
-    
-    d3.select(".aug-button")
-    .append("button")
-    .text("노이즈 추가")
-    .on("click", function() {
-        update(data2); 
-    });
-
-    d3.select(".aug-button")
-    .append("button")
-    .text("단어 대체")
-    .on("click", function() {
-        update(data3);
-    });
-    
-    d3.select(".aug-button")
-    .append("button")
-    .text("문맥적 삽입")
-    .on("click", function() {
-        update(data4); 
-    });
-
-
-    // 기본 위치 설정
     const svg = d3.select("#perplexity")
         .append("svg")
-        .attr("width", width+margin.left+margin.right)
-        .attr("height", height+margin.top+margin.bottom)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     svg.append("text")
-        .attr("x", width/2)
+        .attr("x", width / 2)
         .attr("y", -30)
         .attr("text-anchor", "middle")
         .attr("font-size", "15px")
@@ -55,20 +23,18 @@ $(document).ready(function(){
 
     svg.append("text")
         .attr("x", width - 50)
-        .attr("y", height + margin.bottom -10)
+        .attr("y", height + margin.bottom - 10)
         .attr("text-anchor", "middle")
         .attr("font-size", "12px")
         .text("augmentation");
 
     svg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("x", height - 220)
+        .attr("x", -(height / 2))
         .attr("y", -margin.left + 20)
         .attr("text-anchor", "middle")
         .attr("font-size", "12px")
         .text("perplexity");
-
-
 
     // Todo: perplexity 지표 불러오기
     // 임시로 로컬 데이터 선언

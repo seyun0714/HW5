@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 from utils import calc_perplexity, tsne_visualization
 
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -41,9 +42,19 @@ def perplexity():
         "aug": perplexity_augmented
     })
 
-@app.route('/augmentation')
+@app.route('/augmentation', methods=['GET'])
 def augmentation():
-    return "augmentation"
+    # Query parameter 가져오기
+    augmentation_type = request.args.get('augmentationType', 'default')
+
+    # 더미 데이터 생성
+    dummy_data = [
+        {"origin": f"origin_{i}", "aug": f"{augmentation_type}_aug_{i}"}
+        for i in range(5)
+    ]
+
+    # JSON 응답 반환
+    return jsonify(dummy_data)
 
 @app.route('/chatbot')
 def chatbot():
