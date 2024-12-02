@@ -2,16 +2,24 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 /* 최상단 제목 */
 .title {
     width: 98%;
-    height: 5%;
-    margin-top: 5px;
-    margin-left: 20px;
+    min-width: 700px;
+    height: 60px;
+    margin: 10px 10px 10px 10px;
+    padding-left: 10px;
     font-size: 32px;
-    text-align: left
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    background-color: #4A6FA5;
+    color: white;
 }
 
 /* file, graph container 포함*/
@@ -21,30 +29,91 @@ html, body {
     justify-content: center;
 }
 
+.my-btn{
+    background-color: #4A6FA5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.my-btn:hover{
+    background-color: #2C4875;
+}
+
+
 /* 4칸으로 나뉘는 그래프 컨테이너*/
 .graph-container{
     width: 96%;
     height: 96%;
     margin: 1%;
+    display: flex;
+    flex-direction: column;
 }
 
 /* 컨테이너 가로(row) */
 .row{
     width: 100%;
     height: 50%;
+    min-height: 50%;
+    max-height: 50%;
 }
 
 /* 컨테이너 각 칸의 아이템 */
 .card-body{
     width: 96%;
     height: 96%;
+    max-height: 96%;
     margin: 2%;
+    flex-shrink: 0;
+}
+
+
+
+/* 증강 기법 선택 컨테이너 */
+.select-container {
+    width: 400px;
+    margin: 0 auto 15px;
+    text-align: center;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+#aug-label {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.aug-select {
+    width: auto;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+    transition: all 0.2s ease;
+}
+
+.aug-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74,111,165,0.1);
 }
 
 /* 증강 기법 버튼*/
-.aug-button{
-    display:flex;
-    justify-content: space-around;
+.aug-button {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
 }
 
 /* 파일 컨테이너*/
@@ -63,4 +132,95 @@ html, body {
 }
 .file-container:hover{
     background-color: #e0e0e0;
+}
+
+
+/* 챗봇 컨테이너 */
+.chatbot-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.input-container {
+    position: relative;
+    width: 100%;
+    height: 40%;
+}
+
+.chatbot-input {
+    width: 100%;
+    height: 100%;
+    padding: 0.75rem;
+    padding-bottom: 3.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    resize: none;
+    font-size: 0.9rem;
+    background-color: #f8f9fa;
+}
+
+.chatbot-button {
+    position: absolute;
+    bottom: 1.0rem;
+    right: 1.0rem;
+    width: 2.0rem;
+    height: 2.0rem;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 챗봇 전송 버튼 이미지(아래 화살표)*/
+.chatbot-button img {
+    width: 20px;
+    height: auto;
+    filter: brightness(0) invert(1);
+}
+
+.output-container {
+    width: 100%;
+    height: 40%;
+    padding: 1rem;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+
+.chatbot-output {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #212529;
+}
+
+.utility-container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dataset-load{
+    margin-top: 10px;
+}
+
+.dataset-load input{
+    margin-bottom: 10px;
+}
+
+.dataset-load-button{
+    width: 100%;
+}
+
+.csv-download{
+    margin-top: 10px;
 }
