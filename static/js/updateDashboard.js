@@ -129,7 +129,24 @@ function updateTSNE(augType) {
 }
 
 function updateAugData(augType) {
-    console.log(augType);
+    // API 호출
+    d3.json(`/augmentation?augmentationType=${augType}`)
+        .then(data => {
+            // 데이터 컨테이너 가져오기
+            const container = d3.select('#augdata');
+
+            // 기존 데이터를 제거
+            container.selectAll('.data-item').remove();
+
+            // 새로운 데이터 표시
+            container.selectAll('.data-item')
+                .data(data)
+                .enter()
+                .append('div')
+                .attr('class', 'data-item')
+                .text(d => `Origin: ${d.origin}, Aug: ${d.aug}`);
+        })
+        .catch(error => console.error('Error fetching data:', error));
 }
 
 function updateChatbot() {
