@@ -1,6 +1,8 @@
 from flask import Flask, render_template, jsonify, request
 from utils import calc_perplexity, tsne_visualization
-
+import requests
+from flask_restx import Api, Resource, fields
+from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
 
@@ -8,15 +10,35 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/t-sne')
-def t_sne():
-    augment_type = request.json.get('augType')
+# Flask-RESTX API 초기화
+api = Api(
+    app,
+    version='1.0',
+    title='User API',
+    description='A simple User API using Flask-RESTX',
+    doc='/apidoc'  # Swagger UI 경로 설정
+)
 
-    # 선택 된 증강 기법에 해당하는 데이터 셋 지정
-    data = ""
-    
-    # tsne_visualiztion 함수 내부에서 json 형식으로 값을 return
-    return tsne_visualization(data) 
+# 네임스페이스 정의
+ns = api.namespace('users', description='User operations')
+
+# 모델 정의 (Swagger에서 사용)
+user_model = api.model('User', {
+    'id': fields.Integer(readonly=True, description='The user unique identifier'),
+    'name': fields.String(required=True, description='The user name'),
+    'email': fields.String(required=True, description='The user email')
+})
+
+
+
+@ns.route('/t-sne')
+# Flask-RESTX를 사용하여 API 엔드포인트 등록
+class TSNEVisualization(Resource):
+    @ns.doc('t_sne_visualization')
+    def get(self):
+        augment_type = request.json.get('augType', 'default')
+        data = ""  # 여기서 필요한 데이터 설정
+        return {"message": "t-SNE visualization endpoint", "augmentType": augment_type}
 
 @app.route('/perplexity', methods=['POST'])
 def perplexity():
@@ -109,16 +131,30 @@ def augmentation():
     # JSON 응답 반환
     return jsonify(dummy_data)
 
-@app.route('/chatbot', methods=['POST'])
+@app.route('/chatbot', methods=['GET'])
 def chatbot():
-    # input 가져오기    
-    content = request.json.get('content')
-    augType = request.json.get('augType')
+    try:
+        # 원격 서버에 GET 요청 보내기
+        response = requests.get(REMOTE_SERVER_URL, params={'key': 'value'})
 
-    # 챗봇 응답 가져오기
-    chatbot_result = content
+        # 원격 서버의 응답을 처리
+        if response.status_code == 200:
+            data = response.json()  # JSON 응답 파싱
+            return jsonify({'status': 'success', 'data': data}), 200
+        else:
+            return jsonify({'status': 'fail', 'message': 'Error from remote server'}), response.status_code
+    except requests.exceptions.RequestException as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
-    return jsonify({"result": chatbot_result})
+
+    # # input 가져오기
+    # content = request.json.get('content')
+    # augType = request.json.get('augType')
+    #
+    # # 챗봇 응답 가져오기
+    # chatbot_result = content
+    #
+    # return jsonify({"result": chatbot_result})
 
 if __name__ == '__main__':
     app.run(debug=True)
