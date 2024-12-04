@@ -10,13 +10,24 @@ def index():
 
 @app.route('/t-sne')
 def t_sne():
-    augment_type = request.json.get('augType')
-
-    # 선택 된 증강 기법에 해당하는 데이터 셋 지정
-    data = ""
+    # 증강된 데이터 파일 경로
+    origin_path = ""
+    SR_path=""
+    RI_path=""
+    RD_path=""
+    RS_path=""
     
-    # tsne_visualiztion 함수 내부에서 json 형식으로 값을 return
-    return tsne_visualization(data) 
+    origin_data = tsne_visualization(origin_path, aug_type="origin")
+    SR_data = tsne_visualization(SR_path, aug_type="SR")
+    RI_data = tsne_visualization(RI_path, aug_type="RI")
+    RD_data = tsne_visualization(RD_path, aug_type="RD")
+    RS_data = tsne_visualization(RS_path, aug_type="RS")
+
+    return jsonify(origin_data+
+                   SR_data+
+                   RI_data+
+                   RD_data+
+                   RS_data)
 
 @app.route('/perplexity', methods=['POST'])
 def perplexity():
