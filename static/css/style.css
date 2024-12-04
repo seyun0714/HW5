@@ -65,10 +65,22 @@ html, body {
 .card-body{
     width:96%;
     height:270px;
-    max-height: 96%;
     margin: 2%;
     flex-shrink: 0;
 }
+
+.card-title h5{
+    font-size : 1.2rem;
+}
+
+/* 증강 예시 아이템 */
+.aug-card{
+    width:96%;
+    height:96%;
+    margin:2%;
+    flex-shrink: 0;
+}
+
 
 
 
@@ -162,6 +174,14 @@ html, body {
     resize: none;
     font-size: 0.9rem;
     background-color: #f8f9fa;
+}
+
+.chatbot-input::-webkit-scrollbar{
+    display : none;
+}
+
+.output-container::-webkit-scrollbar{
+    display: none;
 }
 
 .chatbot-button {
