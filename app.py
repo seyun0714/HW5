@@ -35,10 +35,25 @@ user_model = api.model('User', {
 # Flask-RESTX를 사용하여 API 엔드포인트 등록
 class TSNEVisualization(Resource):
     @ns.doc('t_sne_visualization')
-    def get(self):
-        augment_type = request.json.get('augType', 'default')
-        data = ""  # 여기서 필요한 데이터 설정
-        return {"message": "t-SNE visualization endpoint", "augmentType": augment_type}
+    def t_sne():
+    # 증강된 데이터 파일 경로
+      origin_path = ""
+      SR_path=""
+      RI_path=""
+      RD_path=""
+      RS_path=""
+
+      origin_data = tsne_visualization(origin_path, aug_type="origin")
+      SR_data = tsne_visualization(SR_path, aug_type="SR")
+      RI_data = tsne_visualization(RI_path, aug_type="RI")
+      RD_data = tsne_visualization(RD_path, aug_type="RD")
+      RS_data = tsne_visualization(RS_path, aug_type="RS")
+
+      return jsonify(origin_data+
+                     SR_data+
+                     RI_data+
+                     RD_data+
+                     RS_data)
 
 @app.route('/perplexity', methods=['POST'])
 def perplexity():

@@ -59,7 +59,7 @@ def calc_perplexity(model_id, csv_path):
     return ppl
 
 
-def tsne_visualization(data_path):
+def tsne_visualization(data_path, aug_type="origin"):
     # 데이터셋 로드
     data = pd.read_csv(data_path)
     target_column = 'Q'
@@ -78,9 +78,24 @@ def tsne_visualization(data_path):
     tsne = TSNE(n_components=2, perplexity=2, random_state=42)
     reduced_vectors = tsne.fit_transform(vectors)
 
+    if (aug_type == "origin"):
+        color = "red"
+    elif (aug_type == "SR"):
+        color = "skyblue"
+    elif (aug_type == "RI"):
+        color = "orange"
+    elif (aug_type == "RS"):
+        color = "green"
+    elif (aug_type == "RD"):
+        color = "yellow"
+
     # json 형태로 저장
     tsne_result = [
-        {"word": word, "x": float(coord[0]), "y": float(coord[1])}
+        {"word": word,
+         "legend": aug_type,
+         "color": color,
+         "x": float(coord[0]),
+         "y": float(coord[1])}
         for word, coord in zip(words, reduced_vectors)
     ]
 
