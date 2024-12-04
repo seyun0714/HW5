@@ -15,11 +15,17 @@
     <div class="row">
         <div class="card col-lg-6">
             <div class="card-body">
+                <div class="card-title" id="tsne-title">
+                    <h5>Perplexity 지표</h5>
+                </div>
                 <div id="perplexity"></div>
             </div>
         </div>
         <div class="card col-lg-6">
             <div class="card-body">
+                <div class="card-title" id="tsne-title">
+                    <h5>T-SNE</h5>
+                </div>
                 <div id="tsne"></div>
             </div>
         </div>
@@ -27,12 +33,15 @@
     <div class="row">
         <div class="card col-lg-4">
             <div class="card-body">
+                <div id="chatbot-title">
+                    <h5>증강 데이터 예시</h5>
+                </div>
                 <div id="augdata"></div>
             </div>
         </div>
         <div class="card col-lg-4">
             <div class="card-body">
-                <div id="chatbot-title">
+                <div class="card-title" id="chatbot-title">
                     <h5>챗봇</h5>
                 </div>
                 <div class="chatbot-container">
@@ -50,17 +59,17 @@
         </div>
         <div class="card col-lg-4">
             <div class="card-body">
-                <div id="utility">
+                <div class="card-title" id="utility-title">
                     <h5>유틸리티</h5>
-                    <div class="utility-container">
-                        <div class="csv-download">
-                            <p class="csv-download-text">증강 데이터셋 다운로드</p>
-                            <button class="my-btn csv-download-button">다운로드</button>
-                        </div>
-                        <div class="dataset-load">
-                            <input type="file" id="dataset-input" class="form-control" accept=".csv">
-                            <button class="my-btn load-dataset-button">다른 데이터셋 로드</button>
-                        </div>
+                </div>
+                <div class="utility-container">
+                    <div class="csv-download">
+                        <p class="csv-download-text">증강 데이터셋 다운로드</p>
+                        <button class="my-btn csv-download-button">다운로드</button>
+                    </div>
+                    <div class="dataset-load">
+                        <input type="file" id="dataset-input" class="form-control" accept=".csv">
+                        <button class="my-btn load-dataset-button">다른 데이터셋 로드</button>
                     </div>
                 </div>
             </div>
