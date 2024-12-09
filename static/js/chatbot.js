@@ -12,7 +12,7 @@ $(document).ready(function(){
 });
 
 function getChatbotResult(augType, content){
-    fetch("/chatbot", {
+    fetch("/data_routes/chatbot", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -21,7 +21,7 @@ function getChatbotResult(augType, content){
     })
     .then(response => response.json())
     .then(data => {
-        $(".chatbot-output").text(data.result);
+        $(".chatbot-output").text(data.data.generated_text);
         $(".chatbot-output").css("opacity", 1);
     });
 }
