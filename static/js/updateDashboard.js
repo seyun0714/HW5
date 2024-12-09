@@ -219,15 +219,18 @@ async function updateTSNE(augType) {
     
 
 async function updateAugData(augType) {
+    var fetchdata = []
     // API 호출
-    await d3.json(`/augmentation?augmentationType=${augType}`)
+    await d3.json(`/data_routes/augmentation?augmentationType=${augType}`)
         .then(data => {
+
+            fetchdata = data;
             // // 데이터 컨테이너 가져오기
             // const container = d3.select('#augdata');
-
+            //
             // // 기존 데이터를 제거
             // container.selectAll('.data-item').remove();
-
+            //
             // // 새로운 데이터 표시
             // container.selectAll('.data-item')
             //     .data(data)
@@ -238,13 +241,13 @@ async function updateAugData(augType) {
         })
         .catch(error => console.error('Error fetching data:', error));
 
-
         var data = [
             {"origin" : "1", "aug": "1"},
             {"origin" : "2", "aug": "2"},
             {"origin" : "3", "aug": "3"},
             {"origin" : "4", "aug": "4"},
             {"origin" : "5", "aug": "5"},
+            {"origin" : "6", "aug": "6"},
         ]
 
         // 컨테이너 선택 (Chart1 ID를 가진 div)
@@ -273,7 +276,7 @@ async function updateAugData(augType) {
         .html(style);
 
         // 각 데이터 항목에 대해 Bootstrap 카드를 생성
-        data.forEach(function(d) {
+        fetchdata.forEach(function(d) {
             // 컬럼 생성
             var col = scrollableDiv.append("div")
                 .attr("class", "col-12"); // 1열로 설정
