@@ -1,3 +1,4 @@
+import pandas as pd
 from flask import Flask, render_template, jsonify, request
 from utils import calc_perplexity, tsne_visualization
 import requests
@@ -135,10 +136,25 @@ class AUGMENTATION(Resource):
         # 원격 Flask 서버로 데이터 전달
         response = requests.post(REMOTE_SERVER_URL + REMOTE_SERVER_AUG_ROUTE, json=payload)
         response_json = response.json()
+
+        aug_df = pd.DataFrame(response_json)
+        if augmentation_type == "SR":
+            aug_df = aug_df[aug_df['id'].str.startswith('sr')]
+            filtered_json = aug_df.to_dict(orient='records')
+        elif augmentation_type == "RI":
+            aug_df = aug_df[aug_df['id'].str.startswith('ri')]
+            filtered_json = aug_df.to_dict(orient='records')
+        elif augmentation_type == "RS":
+            aug_df = aug_df[aug_df['id'].str.startswith('rs')]
+            filtered_json = aug_df.to_dict(orient='records')
+        elif augmentation_type == "RD":
+            aug_df = aug_df[aug_df['id'].str.startswith('rd')]
+            filtered_json = aug_df.to_dict(orient='records')
+
         # 더미 데이터 생성
         dummy_data = [
             {"origin": f"{row['Q']}", "aug": f"{row['A']}"}
-            for row in response_json
+            for row in filtered_json
         ]
 
         # JSON 응답 반환
