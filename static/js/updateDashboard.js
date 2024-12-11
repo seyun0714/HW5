@@ -256,13 +256,46 @@ async function updateTSNE(augType) {
     
 
 async function updateAugData(augType) {
-    var data = [
-        {"origin" : "1", "aug": "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요"},
-        {"origin" : "2", "aug": "2"},
-        {"origin" : "3", "aug": "3"},
-        {"origin" : "4", "aug": "4"},
-        {"origin" : "5", "aug": "5"},
-    ];
+    var fetchdata = []
+    // API 호출
+    await d3.json(`/data_routes/augmentation?augmentationType=${augType}`)
+        .then(data => {
+
+            fetchdata = data;
+            // // 데이터 컨테이너 가져오기
+            // const container = d3.select('#augdata');
+            //
+            // // 기존 데이터를 제거
+            // container.selectAll('.data-item').remove();
+            //
+            // // 새로운 데이터 표시
+            // container.selectAll('.data-item')
+            //     .data(data)
+            //     .enter()
+            //     .append('div')
+            //     .attr('class', 'data-item')
+            //     .text(d => `Origin: ${d.origin}, Aug: ${d.aug}`);
+        })
+        .catch(error => console.error('Error fetching data:', error));
+
+        var data = [
+            {"origin" : "1", "aug": "1"},
+            {"origin" : "2", "aug": "2"},
+            {"origin" : "3", "aug": "3"},
+            {"origin" : "4", "aug": "4"},
+            {"origin" : "5", "aug": "5"},
+            {"origin" : "6", "aug": "6"},
+        ]
+
+        // 스타일 요소 추가
+        d3.select("head")
+        .append("style")
+        .html(style);
+
+        // 각 데이터 항목에 대해 Bootstrap 카드를 생성
+        fetchdata.forEach(function(d) {
+           
+        });
 
     const augContainer = d3.select("#aug-container");
     let currentIndex = 0;
