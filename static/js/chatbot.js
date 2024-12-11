@@ -7,6 +7,10 @@ $(document).ready(function(){
             $(".chatbot-output").css("opacity", 0.54);
             return;
         }
+        if(augType==null){
+            augType = "default";
+        }
+        console.log(augType, content);
         getChatbotResult(augType, content);
     });
 });
@@ -17,7 +21,7 @@ function getChatbotResult(augType, content){
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({augType: augType, content: content})
+        body: JSON.stringify({augmentationType: augType, content: content})
     })
     .then(response => response.json())
     .then(data => {

@@ -8,7 +8,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('file.html')
+
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    return render_template('dashboard.html')
 
 # Flask-RESTX API 초기화
 api = Api(
@@ -146,30 +150,33 @@ def augmentation():
     # JSON 응답 반환
     return jsonify(dummy_data)
 
-@app.route('/chatbot', methods=['GET'])
+
+REMOTE_SERVER_URL = ""
+
+@app.route('/chatbot', methods=['POST'])
 def chatbot():
-    try:
-        # 원격 서버에 GET 요청 보내기
-        response = requests.get(REMOTE_SERVER_URL, params={'key': 'value'})
+    # try:
+    #     # 원격 서버에 GET 요청 보내기
+    #     response = requests.get(REMOTE_SERVER_URL, params={'key': 'value'})
 
-        # 원격 서버의 응답을 처리
-        if response.status_code == 200:
-            data = response.json()  # JSON 응답 파싱
-            return jsonify({'status': 'success', 'data': data}), 200
-        else:
-            return jsonify({'status': 'fail', 'message': 'Error from remote server'}), response.status_code
-    except requests.exceptions.RequestException as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+    #     # 원격 서버의 응답을 처리
+    #     if response.status_code == 200:
+    #         data = response.json()  # JSON 응답 파싱
+    #         return jsonify({'status': 'success', 'data': data}), 200
+    #     else:
+    #         return jsonify({'status': 'fail', 'message': 'Error from remote server'}), response.status_code
+    # except requests.exceptions.RequestException as e:
+    #     return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
-    # # input 가져오기
-    # content = request.json.get('content')
-    # augType = request.json.get('augType')
-    #
-    # # 챗봇 응답 가져오기
-    # chatbot_result = content
-    #
-    # return jsonify({"result": chatbot_result})
+    # input 가져오기
+    content = request.json.get('content')
+    augType = request.json.get('augType')
+    
+    # 챗봇 응답 가져오기
+    chatbot_result = content
+    
+    return jsonify({"result": chatbot_result})
 
 if __name__ == '__main__':
     app.run(debug=True)
