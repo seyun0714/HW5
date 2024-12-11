@@ -85,26 +85,6 @@ def perplexity():
             {"name": "문맥적 삽입", "value": 1.7}
         )
 
-    # var data1 = [
-    #     {name: "base", value: 4.0},
-    #     {name: "base2", value: 4.6},
-    #     {name: "문장 구조 변경", value: 5.0}
-    # ];
-    # var data2 = [
-    #     {name: "base", value: 4.0},
-    #     {name: "base2", value: 4.6},
-    #     {name: "노이즈 추가", value: 7.3}
-    # ];
-    # var data3 = [
-    #     {name: "base", value: 4.0},
-    #     {name: "base2", value: 4.6},
-    #     {name: "단어 대체", value: 6.1}
-    # ];
-    # var data4 = [
-    #     {name: "base", value: 4.0},
-    #     {name: "base2", value: 4.6},
-    #     {name: "문맥적 삽입", value: 5.7}
-    # ];
 
     # # request를 통해 증강 종류 확인
     # augment_type = request.args.get()
@@ -136,6 +116,10 @@ class AUGMENTATION(Resource):
     def get(self):
         # Query parameter 가져오기
         augmentation_type = request.args.get('augmentationType', 'default')
+        
+        if(augmentation_type == "default"):
+            return jsonify([{"origin" : "", "aug" : ""}])
+        
         payload = {'augmentationType': augmentation_type}
         # 원격 Flask 서버로 데이터 전달
         response = requests.post(REMOTE_SERVER_URL + REMOTE_SERVER_AUG_ROUTE, json=payload)

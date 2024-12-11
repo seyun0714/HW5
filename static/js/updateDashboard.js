@@ -12,14 +12,6 @@ $(document).ready(function() {
         updateDashboard(augSelect.val());
     });
 
-    // 윈도우 리사이즈 이벤트 핸들러 추가
-    $(window).on('resize', _.debounce(function() {
-        if ($('.aug-select').val()) {
-            updateDashboard($('.aug-select').val());
-        } else {
-            updateDashboard("default");
-        }
-    }, 250));
 });
 
 async function updateDashboard(augType) {
@@ -260,7 +252,6 @@ async function updateAugData(augType) {
     // API 호출
     await d3.json(`/data_routes/augmentation?augmentationType=${augType}`)
         .then(data => {
-
             fetchdata = data;
             // // 데이터 컨테이너 가져오기
             // const container = d3.select('#augdata');
@@ -278,62 +269,56 @@ async function updateAugData(augType) {
         })
         .catch(error => console.error('Error fetching data:', error));
 
-        var data = [
-            {"origin" : "1", "aug": "1"},
-            {"origin" : "2", "aug": "2"},
-            {"origin" : "3", "aug": "3"},
-            {"origin" : "4", "aug": "4"},
-            {"origin" : "5", "aug": "5"},
-            {"origin" : "6", "aug": "6"},
-        ]
-
-        // 스타일 요소 추가
-        d3.select("head")
-        .append("style")
-        .html(style);
-
-        // 각 데이터 항목에 대해 Bootstrap 카드를 생성
-        fetchdata.forEach(function(d) {
-           
-        });
-
-    const augContainer = d3.select("#aug-container");
-    let currentIndex = 0;
-
-    // 이벤트 리스너 설정
-    d3.select(".aug-prev-btn").on("click", () => showCard(currentIndex - 1));
-    d3.select(".aug-next-btn").on("click", () => showCard(currentIndex + 1));
-
-    function showCard(index) {
-        // 인덱스 범위 확인
-        if (index < 0 || index >= data.length) return;
+        console.log(fetchdata);
         
-        currentIndex = index;
+        // var data = [
+        //     {"origin" : "1", "aug": "1"},
+        //     {"origin" : "2", "aug": "2"},
+        //     {"origin" : "3", "aug": "3"},
+        //     {"origin" : "4", "aug": "4"},
+        //     {"origin" : "5", "aug": "5"},
+        //     {"origin" : "6", "aug": "6"},
+        // ]
+
+        const augContainer = d3.select("#aug-container");
+        let currentIndex = 0;
+
+        // 이벤트 리스너 설정
+        d3.select(".aug-prev-btn").on("click", () => showCard(currentIndex - 1));
+        d3.select(".aug-next-btn").on("click", () => showCard(currentIndex + 1));
+
+        function showCard(index) {
+            // 인덱스 범위 확인
+            if (index < 0 || index >= fetchdata.length) return;
+            
+            currentIndex = index;
+            
+            // 카드 컨테이너 초기화
+            augContainer.selectAll("*").remove();
+
+            // 원본 질문
+            augContainer.append("div")
+                .attr("class", "aug-card-header")
+                .html(`<div class="aug-card-label">origin Q</div><div class="aug-card-content">${fetchdata[index].origin}</div>`);
+
+            // 증강된 질문
+            augContainer.append("div")
+                .attr("class", "aug-card-body")
+                .html(`<div class="aug-card-label">aug Q</div><div class="aug-card-content">${fetchdata[index].aug}</div>`);
+                    
+            // 버튼 활성화/비활성화
+            d3.select(".aug-prev-btn")
+                .classed("disabled", currentIndex === 0)
+                .style("visibility", currentIndex === 0 ? "hidden" : "visible");
+            d3.select(".aug-next-btn")
+                .classed("disabled", currentIndex === fetchdata.length - 1)
+                .style("visibility", currentIndex === fetchdata.length - 1 ? "hidden" : "visible");
+        }
+
+        // 초기 카드 표시
+        showCard(0);
         
-        // 카드 컨테이너 초기화
-        augContainer.selectAll("*").remove();
 
-        // 원본 질문
-        augContainer.append("div")
-            .attr("class", "aug-card-header")
-            .html(`<div class="aug-card-label">origin Q</div><div class="aug-card-content">${data[index].origin}</div>`);
-
-        // 증강된 질문
-        augContainer.append("div")
-            .attr("class", "aug-card-body")
-            .html(`<div class="aug-card-label">aug Q</div><div class="aug-card-content">${data[index].aug}</div>`);
-                
-        // 버튼 활성화/비활성화
-        d3.select(".aug-prev-btn")
-            .classed("disabled", currentIndex === 0)
-            .style("visibility", currentIndex === 0 ? "hidden" : "visible");
-        d3.select(".aug-next-btn")
-            .classed("disabled", currentIndex === data.length - 1)
-            .style("visibility", currentIndex === data.length - 1 ? "hidden" : "visible");
-    }
-
-    // 초기 카드 표시
-    showCard(0);
 }
 
 async function updateChatbot() {
