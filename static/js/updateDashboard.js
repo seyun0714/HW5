@@ -262,7 +262,7 @@ async function updateAugData(augType) {
         // 스타일 추가
         var style = `
         .scrollable {
-            max-height : 270px;
+            max-height : 350px;
             overflow-y: auto;
         }
         .scrollable::-webkit-scrollbar{
