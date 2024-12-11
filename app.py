@@ -141,6 +141,7 @@ class AUGMENTATION(Resource):
         response = requests.post(REMOTE_SERVER_URL + REMOTE_SERVER_AUG_ROUTE, json=payload)
         response_json = response.json()
 
+        print(response_json)
         aug_df = pd.DataFrame(response_json)
         if augmentation_type == "SR":
             aug_df = aug_df[aug_df['id'].str.startswith('sr')]
@@ -156,13 +157,22 @@ class AUGMENTATION(Resource):
             filtered_json = aug_df.to_dict(orient='records')
 
         # 더미 데이터 생성
-        dummy_data = [
-            {"origin": f"{row['Q']}", "aug": f"{row['A']}"}
+        aug_data = [
+            {"origin": f"{row['Q']}"}
             for row in filtered_json
         ]
 
+        origin_data = [
+            {"aug": f"{row['Q']}"}
+             for row in aug_df
+        ]
+
+        output_data = origin_data | aug_data
+
+
+        print(output_data)
         # JSON 응답 반환
-        return jsonify(dummy_data)
+        return jsonify(output_data)
 
 
 REMOTE_SERVER_URL = "https://team-e.gpu.seongbum.com"
