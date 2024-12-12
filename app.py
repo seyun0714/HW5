@@ -5,6 +5,7 @@ import requests
 from flask_restx import Api, Resource, fields
 from flask_swagger_ui import get_swaggerui_blueprint
 import re
+import json
 
 app = Flask(__name__)
 
@@ -141,7 +142,7 @@ class AUGMENTATION(Resource):
 
 
 REMOTE_SERVER_URL = "https://team-e.gpu.seongbum.com"
-REMOTE_SERVER_CHATBOT_ROUTE = "/flask/generate"
+REMOTE_SERVER_CHATBOT_ROUTE = "/flask/chatbot"
 @ns.route('/chatbot')
 class CHATBOT(Resource):
     @ns.doc('chatbot_data')  # Swagger 문서 설명
@@ -152,8 +153,9 @@ class CHATBOT(Resource):
             client_data = request.get_json()
             print(f"Received data from client: {client_data}")
 
-            # 원격 Flask 서버로 데이터 전달
-            response = requests.post(REMOTE_SERVER_URL + REMOTE_SERVER_CHATBOT_ROUTE, json=client_data)
+            augtype = client_data['augmentationType']
+            print(client_data['augmentationType'])
+            response = requests.post(REMOTE_SERVER_URL + "/flask/chatbot", json=client_data)
 
             # 원격 서버의 응답 처리
             if response.status_code == 200:
@@ -165,15 +167,6 @@ class CHATBOT(Resource):
 
         except requests.exceptions.RequestException as e:
             return {'status': 'error', 'message': str(e)}, 500
-    # # input 가져오기
-    # content = request.json.get('content')
-    # augType = request.json.get('augType')
-    #
-    # # 챗봇 응답 가져오기
-    # chatbot_result = content
-    #
-    # return jsonify({"result": chatbot_result})
-
 
 if __name__ == '__main__':
     app.run(debug=True)
