@@ -4,6 +4,7 @@ from utils import calc_perplexity, tsne_visualization
 import requests
 from flask_restx import Api, Resource, fields
 from flask_swagger_ui import get_swaggerui_blueprint
+import re
 
 app = Flask(__name__)
 
@@ -127,36 +128,16 @@ class AUGMENTATION(Resource):
 
         print(response_json)
         aug_df = pd.DataFrame(response_json)
-        if augmentation_type == "SR":
-            aug_df = aug_df[aug_df['id'].str.startswith('sr')]
-            filtered_json = aug_df.to_dict(orient='records')
-        elif augmentation_type == "RI":
-            aug_df = aug_df[aug_df['id'].str.startswith('ri')]
-            filtered_json = aug_df.to_dict(orient='records')
-        elif augmentation_type == "RS":
-            aug_df = aug_df[aug_df['id'].str.startswith('rs')]
-            filtered_json = aug_df.to_dict(orient='records')
-        elif augmentation_type == "RD":
-            aug_df = aug_df[aug_df['id'].str.startswith('rd')]
-            filtered_json = aug_df.to_dict(orient='records')
 
         # 더미 데이터 생성
         aug_data = [
-            {"origin": f"{row['Q']}"}
-            for row in filtered_json
+            {"origin": f"{row['Q']}", "aug": f"{row['Q-AUG']}"}
+            for _, row in aug_df.iterrows()
         ]
 
-        origin_data = [
-            {"aug": f"{row['Q']}"}
-             for row in aug_df
-        ]
-
-        output_data = origin_data | aug_data
-
-
-        print(output_data)
+        print(aug_data)
         # JSON 응답 반환
-        return jsonify(output_data)
+        return jsonify(aug_data)
 
 
 REMOTE_SERVER_URL = "https://team-e.gpu.seongbum.com"
