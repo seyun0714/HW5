@@ -203,10 +203,10 @@ async function updateAugData(augType) {
             var origin = fetchdata[index].origin;
             var aug = fetchdata[index].aug;
 
-            // if($(".aug-select").val() == "default"){
-            //     origin = "증강 전 질문";
-            //     aug = "증강 후 질문";
-            // }
+            if($(".aug-select").val() == "default"){
+                origin = "증강 전 질문";
+                aug = "증강 후 질문";
+            }
 
             console.log(origin, aug);
 
@@ -220,9 +220,9 @@ async function updateAugData(augType) {
                 .attr("class", "aug-card-body")
                 .html(`<div class="aug-card-label">aug Q</div><div class="aug-card-content">${aug}</div>`);
                     
-            // if($(".aug-select").val() == "default"){
-            //     $(".aug-card-content").css("opacity", 0.54);
-            // }
+            if($(".aug-select").val() == "default"){
+                $(".aug-card-content").css("opacity", 0.54);
+            }
             
             // 버튼 활성화/비활성화
             d3.select(".aug-prev-btn")
@@ -239,10 +239,10 @@ async function updateAugData(augType) {
 
 async function updateChatbot(augType) {
     if(augType != "default"){
-        $("#chatbot-title").text(augType + " Chatbot");
+        $("#chatbot-title h5").text(augType + " Chatbot");
     }
     else{
-        $("#chatbot-title").text("Chatbot");
+        $("#chatbot-title h5").text("Base Chatbot");
     }
     $(".chatbot-input").val("");
     $(".chatbot-output").text("여기에 답변이 표시됩니다.");

@@ -78,9 +78,10 @@ $(document).ready(async function() {
             .selectAll("text")
             .style("font-size", "11px")
             .style("font-weight", "500");
+
         const legend = svg.append("g")
             .attr("class", "legend")
-            .attr("transform", `translate(${width - 120}, -30)`);
+            .attr("transform", `translate(${width - 100}, -50)`);
 
         // 배경 사각형 추가
         legend.append("rect")

@@ -15,8 +15,8 @@
         </div>
         <div class="aug-range-container">
             <label id="aug-label" for="aug-range">Ratio :</label>
-            <label id="aug-range-value">30%</label>
-            <input type="range" id="aug-range" min="1" max="10" value="3">
+            <label id="aug-range-value">50%</label>
+            <input type="range" id="aug-range" min="1" max="9" value="5">
         </div>
     </div>  
     <div class="container-fluid">
@@ -34,6 +34,9 @@
                 <div class="card" style="height: 200px;">
                     <div class="card-title" id="chatbot-title">
                         <h5>Chatbot</h5>
+                        <div class="info-icon" id="info-chatbot"> 
+                            <img src="{{ url_for('static', filename='img/info.png') }}" alt="info">
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="chatbot-container">
@@ -56,6 +59,9 @@
                 <div class="card" style="height: 200px;">
                     <div class="card-title" id="augdata-title">
                         <h5>Augmented Data</h5>
+                        <div class="info-icon" id="info-augdata"> 
+                            <img src="{{ url_for('static', filename='img/info.png') }}" alt="info">
+                        </div>
                     </div>
                     <div class="card-body">
                         <div id="augdata">
@@ -76,6 +82,9 @@
                 <div class="card" style="height: 400px;">
                     <div class="card-title" id="tsne-title">
                         <h5>T-SNE</h5>
+                        <div class="info-icon" id="info-tsne"> 
+                            <img src="{{ url_for('static', filename='img/info.png') }}" alt="info">
+                        </div>
                     </div>
                     <div class="card-body">
                         <div id="tsne"></div>
