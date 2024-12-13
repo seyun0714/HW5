@@ -42,15 +42,51 @@ chatbot_model_second = ns.model('data_routes_second', {
     'codddd': fields.String(required=True, description='The input content for the chatbot')
 })
 
-
+REMOTE_SERVER_URL = "https://team-e.gpu.seongbum.com"
+REMOTE_SERVER_TSNE_ROUTE = "/flask/t-sne"
 @ns.route('/t-sne')
 # Flask-RESTX를 사용하여 API 엔드포인트 등록
 class TSNEVisualization(Resource):
     @ns.doc('t_sne_visualization')
-    def get(self):
-        augment_type = request.json.get('augType', 'default')
-        data = ""  # 여기서 필요한 데이터 설정
-        return {"message": "t-SNE visualization endpoint", "augmentType": augment_type}
+    def post(self):
+        augmentation_type = request.get_json()
+        print(augmentation_type)
+        
+        try:
+            # 원격 서버로 POST 요청
+            response = requests.post(REMOTE_SERVER_URL + REMOTE_SERVER_TSNE_ROUTE, json=augmentation_type)
+            response.raise_for_status()  # 요청 성공 여부 확인
+
+            # 응답 데이터를 JSON 형식으로 파싱
+            tsne_data = response.json()
+            print(tsne_data)
+            
+            return {
+                "message":"fetch Done.",
+                "data":tsne_data
+            }, 200
+            # JSON 데이터를 Pandas DataFrame으로 변환
+            #df = pd.DataFrame(tsne_data)
+            
+            # 데이터를 JSON 파일로 저장
+            #save_path = "static/json/"
+            #df.to_json(save_path + 'tsne_visualization.json', orient='records', indent=4, force_ascii=False)
+            
+            #return {
+            #    "message": "t-SNE visualization data saved successfully as JSON.",
+            #    "data_preview": df.head().to_dict(orient='records')  # 데이터 미리보기 반환
+            #}, 200
+        except requests.exceptions.RequestException as e:
+            # 요청 중 오류가 발생한 경우
+            return {
+                "message": "Failed to fetch t-SNE data from remote server.",
+                "error": str(e)
+            }, 500
+        except ValueError:
+            # 응답 데이터가 JSON 형식이 아닌 경우
+            return {
+                "message": "Invalid JSON response from remote server."
+            }, 500
 
 
 @app.route('/performance')
