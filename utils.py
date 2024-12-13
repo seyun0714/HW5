@@ -8,6 +8,7 @@ import seaborn as sns
 import json
 import torch
 from tqdm import tqdm
+from sklearn.preprocessing import normalize
 
 # def calc_perplexity():
 # flask에서 함수 호출 시 model path와 데이터셋 경로를 제공
@@ -62,10 +63,16 @@ def calc_perplexity(model_id, csv_path):
 def tsne_visualization(data_path, aug_type="origin"):
     # 데이터셋 로드
     data = pd.read_csv(data_path)
+
+    augmented_data = data[data['id'].str.contains('-', na=False)].reset_index(drop=True)
+
+    # 10개마다 1개씩 추출하여 100개 선택
+    sampled_data = augmented_data.iloc[::10].head(100).reset_index(drop=True)
+
     target_column = 'Q'
 
     # 데이터셋 토큰화(공백문자 토큰화)
-    tokens = [word_tokenize(text) for text in data[target_column]]
+    tokens = [word_tokenize(text) for text in sampled_data[target_column]]
 
     # Word2Vec 모델 학습
     model = Word2Vec(sentences=tokens, vector_size=100, window=5, min_count=1, workers=4, sg=1)
@@ -74,28 +81,32 @@ def tsne_visualization(data_path, aug_type="origin"):
     words = list(model.wv.index_to_key)
     vectors = np.array([model.wv[word] for word in words])
 
+    # 벡터 정규화
+    vectors = normalize(vectors)
+
     # 차원 축소
     tsne = TSNE(n_components=2, perplexity=2, random_state=42)
     reduced_vectors = tsne.fit_transform(vectors)
 
-    if (aug_type == "origin"):
-        color = "red"
-    elif (aug_type == "SR"):
-        color = "skyblue"
-    elif (aug_type == "RI"):
-        color = "orange"
-    elif (aug_type == "RS"):
-        color = "green"
-    elif (aug_type == "RD"):
-        color = "yellow"
+    # 시각화 색상 설정
+    color_map = {
+        "origin": "#ffff57",
+        "SR": "#a1dab4",
+        "RI": "#41b6c4",
+        "RS": "#2c7fb8",
+        "RD": "#253494"
+    }
+    color = color_map.get(aug_type, "#000000")
 
     # json 형태로 저장
     tsne_result = [
-        {"word": word,
-         "legend": aug_type,
-         "color": color,
-         "x": float(coord[0]),
-         "y": float(coord[1])}
+        {
+            "x": float(coord[0]),
+            "y": float(coord[1]),
+            "word": word,
+            "color": color,
+            "legend": aug_type
+        }
         for word, coord in zip(words, reduced_vectors)
     ]
 
