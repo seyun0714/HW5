@@ -48,13 +48,13 @@ REMOTE_SERVER_TSNE_ROUTE = "/flask/t-sne"
 # Flask-RESTX를 사용하여 API 엔드포인트 등록
 class TSNEVisualization(Resource):
     @ns.doc('t_sne_visualization')
-    def post(self):
-        augmentation_type = request.get_json()
-        print(augmentation_type)
+    def get(self):
+        #augmentation_type = request.get_json()
+        #print(augmentation_type)
         
         try:
             # 원격 서버로 POST 요청
-            response = requests.post(REMOTE_SERVER_URL + REMOTE_SERVER_TSNE_ROUTE, json=augmentation_type)
+            response = requests.get(REMOTE_SERVER_URL + REMOTE_SERVER_TSNE_ROUTE)#, json=augmentation_type)
             response.raise_for_status()  # 요청 성공 여부 확인
 
             # 응답 데이터를 JSON 형식으로 파싱
