@@ -1,0 +1,152 @@
+$(document).ready(async function() {
+    await fetch("/performance")
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        // 한 칸에 해당하는 크기 설정
+        const cardBody = $("#performance").closest(".card-body");
+        const margin = {top: 50, right: 20, bottom: 40, left:30};
+        var height = cardBody.height() - margin.top - margin.bottom;
+        var width = cardBody.width() - margin.left - margin.right;
+        d3.select("#performance").select("svg").remove();
+        console.log("performance : " + cardBody.height(), cardBody.width());
+
+        const metrics = ['perplexity', 'BLEU', 'ROUGE', 'METEOR', 'chrF'];
+        const colors = {
+            'perplexity': '#6C8EBF',
+            'BLEU': '#B4C7E7',
+            'ROUGE': '#FFB366',
+            'METEOR': '#FF9999',
+            'chrF': '#99CC99'
+        };
+
+        // 기본 위치 설정
+        const svg = d3.select("#performance")
+            .append("svg")
+            .attr("width", width+margin.left+margin.right)
+            .attr("height", height+margin.top+margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        svg.append("text")
+            .attr("x", width - 50)
+            .attr("y", height + margin.bottom -10)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .text("Augmentation")
+            .attr("font-family", "Poppins, Noto Sans KR, sans-serif");
+
+        let x = d3.scaleBand()
+            .domain(data.map(d => d.name))
+            .range([0, width])
+            .padding(0.2);
+
+        let xSubgroup = d3.scaleBand()
+            .domain(metrics)
+            .range([0, x.bandwidth()])
+            .padding(0.05);
+
+        const y = d3.scaleLinear()
+            .domain([0, 80])
+            .range([height, 0]);
+
+        // 차트 배경에 그리드 추가
+        svg.append("g")
+            .attr("class", "grid")
+            .call(d3.axisLeft(y)
+                .tickSize(-width)
+                .tickFormat("")
+            )
+            .style("stroke-dasharray", "3,3")
+            .style("opacity", 0.1);
+
+        // x축 스타일 개선
+        svg.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", `translate(0,${height})`)
+            .attr("font-family", "Poppins, Noto Sans KR, sans-serif")
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .style("font-size", "11px")
+            .style("font-weight", "500");
+
+        // y축 스타일 개선
+        svg.append("g")
+            .call(d3.axisLeft(y))
+            .attr("font-family", "Poppins, Noto Sans KR, sans-serif")
+            .attr("class", "y-axis")
+            .selectAll("text")
+            .style("font-size", "11px")
+            .style("font-weight", "500");
+
+        const legend = svg.append("g")
+            .attr("class", "legend")
+            .attr("transform", `translate(${width - 100}, -50)`);
+
+        // 배경 사각형 추가
+        legend.append("rect")
+            .attr("width", 100)  
+            .attr("height", metrics.length * 20 + 10)
+            .attr("fill", "white")
+            .attr("rx", 5)
+            .attr("ry", 5)
+            .style("stroke", "black")
+            .style("stroke-width", 1);
+            
+        metrics.forEach((metric, i) => {
+            const legendRow = legend.append("g")
+                .attr("transform", `translate(5, ${i * 20 + 5})`);
+            
+            legendRow.append("rect")
+                .attr("width", 15)
+                .attr("height", 15)
+                .attr("fill", colors[metric]);
+            
+            legendRow.append("text")
+                .attr("x", 20)
+                .attr("y", 12)
+                .text(metric)
+                .attr("font-size", "12px")
+                .attr("font-family", "Poppins, Noto Sans KR, sans-serif");
+        });
+
+
+    
+        data.forEach(function(d) {
+            metrics.forEach(function(metric) {
+                const bar = svg.append("rect")
+                    .attr("class", "bar")
+                    .attr("x", x(d.name) + xSubgroup(metric))
+                    .attr("y", height)
+                    .attr("width", xSubgroup.bandwidth())
+                    .attr("height", 0)
+                    .attr("fill", colors[metric])
+                    .attr("rx", 1)
+                    .attr("ry", 1)
+                    .style("filter", "drop-shadow(0px 2px 3px rgba(0,0,0,0.1))");
+                
+                bar.append("title")
+                    .text(`${d.name} - ${metric}: ${d[metric]?.toFixed(2)}`);
+                
+                bar.on("mouseover", function() {
+                        d3.select(this).style("opacity", 0.8);
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this).style("opacity", 1);
+                    });
+                
+                bar.transition()
+                    .duration(600)
+                    .delay(function() {
+                        return metrics.indexOf(metric) * 80;
+                    })
+                    .ease(d3.easeCubicOut)
+                    .attr("y", y(d[metric]))
+                    .attr("height", height - y(d[metric]));
+            });
+        });
+    })
+    .catch(error => {
+        console.error("Error fetching performance data:", error);
+    });
+});

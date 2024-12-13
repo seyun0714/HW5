@@ -2,31 +2,41 @@
 {% block content %}
 <div class="graph-container">
     <div class="select-container">
-        <label id="aug-label" for="aug-select">Augmentation : </label>
-        <select class="aug-select">
-            <option value="default" selected disabled>Select</option>
-            <option value="SR">Synonym Replacement</option>
-            <option value="RI">Random Insertion</option>
-            <option value="RS">Random Swap</option>
-            <option value="RD">Random Deletion</option>
-        </select>
-        <button class="my-btn aug-button">Apply</button>
+        <div class="aug-select-container">
+            <label id="aug-label" for="aug-select">Augmentation : </label>
+            <select class="aug-select">
+                <option value="default">All</option>
+                    <option value="SR">Synonym Replacement</option>
+                <option value="RI">Random Insertion</option>
+                <option value="RS">Random Swap</option>
+                <option value="RD">Random Deletion</option>
+            </select>
+            <button class="my-btn aug-button">Apply</button>
+        </div>
+        <div class="aug-range-container">
+            <label id="aug-label" for="aug-range">Ratio :</label>
+            <label id="aug-range-value">50%</label>
+            <input type="range" id="aug-range" min="1" max="9" value="5">
+        </div>
     </div>  
     <div class="container-fluid">
         <div class="d-flex" style="gap: 20px;">
             <!-- 왼쪽 열 -->
             <div class="d-flex flex-column" style="flex: 1; gap: 20px;">
                 <div class="card" style="height: 400px;">
-                    <div class="card-title" id="perplexity-title">
-                        <h5>Perplexity</h5>
+                    <div class="card-title" id="performance-title">
+                        <h5>Performance</h5>
                     </div>
                     <div class="card-body">
-                        <div id="perplexity"></div>
+                        <div id="performance"></div>
                     </div>
                 </div>
                 <div class="card" style="height: 200px;">
                     <div class="card-title" id="chatbot-title">
                         <h5>Chatbot</h5>
+                        <div class="info-icon" id="info-chatbot"> 
+                            <img src="{{ url_for('static', filename='img/info.png') }}" alt="info">
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="chatbot-container">
@@ -49,6 +59,9 @@
                 <div class="card" style="height: 200px;">
                     <div class="card-title" id="augdata-title">
                         <h5>Augmented Data</h5>
+                        <div class="info-icon" id="info-augdata"> 
+                            <img src="{{ url_for('static', filename='img/info.png') }}" alt="info">
+                        </div>
                     </div>
                     <div class="card-body">
                         <div id="augdata">
@@ -69,6 +82,9 @@
                 <div class="card" style="height: 400px;">
                     <div class="card-title" id="tsne-title">
                         <h5>T-SNE</h5>
+                        <div class="info-icon" id="info-tsne"> 
+                            <img src="{{ url_for('static', filename='img/info.png') }}" alt="info">
+                        </div>
                     </div>
                     <div class="card-body">
                         <div id="tsne"></div>
@@ -83,6 +99,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+<script src="{{ url_for('static', filename='js/performance.js') }}"></script>
 <script src="{{ url_for('static', filename='js/updateDashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/utility.js') }}"></script>
 {% endblock %}

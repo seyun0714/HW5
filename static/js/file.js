@@ -1,7 +1,9 @@
 // 파일 드래그 앤 드롭 함수 구현
 // 데이터셋 업로드 -> 메인 페이지 흐름
 document.addEventListener('DOMContentLoaded', () => {
+    $('.dataset-name').text("Dataset");
     $('#prev-btn').hide();
+    $('#download-btn').hide();
     const drop = document.querySelector('.file-container');
 
     // 파일 정보를 표시할 요소들 추가
@@ -171,16 +173,19 @@ function handleFileUpload(file) {
     .then(response => {
         if(response.ok) {
             hideLoading(); // 로딩 종료
+            localStorage.setItem('dataset-name', file.name);
             window.location.href = '/dashboard';
         } else {
             hideLoading();
+            localStorage.setItem('dataset-name', file.name);
             window.location.href = '/dashboard';
             alert('파일 업로드에 실패했습니다.');
         }
     })
     .catch(error => {
         hideLoading(); // 에러 시에도 로딩 종료
+        localStorage.setItem('dataset-name', file.name);
         window.location.href = '/dashboard';
-        alert('파일 업로드에 실패했습니다.');
+        alert('파일 업로드에 실패했습니다.' + error);
     })
 }
