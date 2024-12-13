@@ -51,40 +51,17 @@ class TSNEVisualization(Resource):
         return {"message": "t-SNE visualization endpoint", "augmentType": augment_type}
 
 
-@app.route('/perplexity', methods=['POST'])
-def perplexity():
-    augType = request.json.get('augType')
-    print(augType)
-    if (augType == "default"):
-        return jsonify(
-            {"name": "base", "value": 4.0},
-            {"name": "base2", "value": 4.6},
-        )
-    elif (augType == "SR"):
-        return jsonify(
-            {"name": "base", "value": 4.0},
-            {"name": "base2", "value": 4.6},
-            {"name": "문장 구조 변경", "value": 3.2}
-        )
-    elif (augType == "RI"):
-        return jsonify(
-            {"name": "base", "value": 4.0},
-            {"name": "base2", "value": 4.6},
-            {"name": "노이즈 추가", "value": 2.4}
-        )
-    elif (augType == "RS"):
-        return jsonify(
-            {"name": "base", "value": 4.0},
-            {"name": "base2", "value": 4.6},
-            {"name": "단어 대체", "value": 1.2}
-        )
-    elif (augType == "RD"):
-        return jsonify(
-            {"name": "base", "value": 4.0},
-            {"name": "base2", "value": 4.6},
-            {"name": "문맥적 삽입", "value": 1.7}
-        )
-
+@app.route('/performance')
+def performance():
+    return jsonify([
+            {"name": "koGPT2", "perplexity": 50.3, "BLEU": 52.2, "ROUGE": 46.3, "METEOR": 38.4, "chrF": 42.2},
+            {"name": "base fine-tuned", "perplexity": 45.2, "BLEU": 47.8, "ROUGE": 42.1, "METEOR": 35.2, "chrF": 38.9},
+            {"name": "SR", "perplexity": 40.1, "BLEU": 43.2, "ROUGE": 38.4, "METEOR": 31.5, "chrF": 35.3},
+            {"name": "RI", "perplexity": 35.8, "BLEU": 38.9, "ROUGE": 34.2, "METEOR": 28.1, "chrF": 31.6},
+            {"name": "RS", "perplexity": 31.2, "BLEU": 34.5, "ROUGE": 30.1, "METEOR": 24.8, "chrF": 27.9},
+            {"name": "RD", "perplexity": 26.9, "BLEU": 30.1, "ROUGE": 26.3, "METEOR": 21.4, "chrF": 24.2}
+        ])
+   
 
     # # request를 통해 증강 종류 확인
     # augment_type = request.args.get()

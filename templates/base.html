@@ -14,10 +14,15 @@
 <body>
     <header>
         <h1 id="title">Dashboard</h1>
-        <h1 id="dataset">Dataset</h1>
-        <button class="my-btn" id="prev-btn">
-            <img src="static/img/arrow_down.png" alt="prev">
-        </button>
+        <h1 id="dataset-name">Dataset</h1>
+        <div class="btn-container">
+            <button class="my-btn" id="prev-btn">
+                <img src="static/img/arrow_down.png" alt="prev">
+            </button>
+            <button class="my-btn" id="download-btn">
+                <img src="static/img/download.png" alt="download">
+            </button>
+        </div>
     </header>
     <div class="main-container">
         {% block content %}

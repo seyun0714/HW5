@@ -1,14 +1,12 @@
 $(document).ready(function() {
     $('#prev-btn').show();
+    $('#download-btn').show();
+    $("#dataset-name").text(localStorage.getItem('dataset-name'));
     updateDashboard("default");
 
     var augSelect = $(".aug-select");
     var augButton = $(".aug-button");
     augButton.on("click", function() {
-        console.log(augSelect.val());
-        if (augSelect.val() == "default") {
-            return;
-        }
         updateDashboard(augSelect.val());
     });
 
@@ -16,7 +14,7 @@ $(document).ready(function() {
 
 async function updateDashboard(augType) {
     await Promise.all([
-        updatePerplexity(augType),
+        updatePerformance(augType),
         updateTSNE(augType),
         updateAugData(augType),
         updateChatbot(augType),
@@ -24,124 +22,30 @@ async function updateDashboard(augType) {
     ]);
 }
 
-async function updatePerplexity(augType) {
-    var perplexityData = [];
-    await fetch("/perplexity", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({augType: augType})
-    })
-    .then(response => response.json())
-    .then(data => {
-        perplexityData = data;
-        console.log(perplexityData);
-        // 한 칸에 해당하는 크기 설정
-        const cardBody = $("#perplexity").closest(".card-body");
-        const margin = {top: 50, right: 20, bottom: 40, left:50};
-        var height = cardBody.height() - margin.top - margin.bottom;
-        var width = cardBody.width() - margin.left - margin.right;
-        d3.select("#perplexity").select("svg").remove();
-        console.log("perplexity : " + cardBody.height(), cardBody.width());
+function updatePerformance(augType) {
+    const svg = d3.select("#performance").select("svg");
+    
+    svg.selectAll(".bar")
+        .transition()
+        .duration(300)
+        .style("stroke", "none");
 
-
-        // 기본 위치 설정
-        const svg = d3.select("#perplexity")
-            .append("svg")
-            .attr("width", width+margin.left+margin.right)
-            .attr("height", height+margin.top+margin.bottom)
-            .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
-
-        svg.append("text")
-            .attr("x", width - 50)
-            .attr("y", height + margin.bottom -10)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "12px")
-            .text("Augmentation")
-            .attr("font-family", "Poppins, Noto Sans KR, sans-serif");
-
-        svg.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("x", height - 270)
-            .attr("y", -margin.left + 10)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "12px")
-            .text("Perplexity")
-            .attr("font-family", "Poppins, Noto Sans KR, sans-serif");
-
-        let x = d3.scaleBand()
-            .domain(perplexityData.map(d => d.name))
-            .range([0, width])
-            .padding(0.5);
-
-        const y = d3.scaleLinear()
-            .domain([0, d3.max(perplexityData, d => d.value) * 1.2])
-            .range([height, 0]);
-
-        // 차트 배경에 그리드 추가
-        svg.append("g")
-            .attr("class", "grid")
-            .call(d3.axisLeft(y)
-                .tickSize(-width)
-                .tickFormat("")
-            )
-            .style("stroke-dasharray", "3,3")
-            .style("opacity", 0.1);
-
-        // x축 스타일 개선
-        svg.append("g")
-            .attr("class", "x-axis")
-            .attr("transform", `translate(0,${height})`)
-            .attr("font-family", "Poppins, Noto Sans KR, sans-serif")
-            .call(d3.axisBottom(x))
-            .selectAll("text")
-            .style("font-size", "11px")
-            .style("font-weight", "500");
-
-        // y축 스타일 개선
-        svg.append("g")
-            .call(d3.axisLeft(y))
-            .attr("font-family", "Poppins, Noto Sans KR, sans-serif")
-            .attr("class", "y-axis")
-            .selectAll("text")
-            .style("font-size", "11px")
-            .style("font-weight", "500");
-
-        svg.selectAll("rect")
-            .data(perplexityData)
-            .join("rect")
-            .attr("x", d => x(d.name))
-            .attr("y", height)
-            .attr("width", x.bandwidth())
-            .attr("height", 0)
-            .attr("fill", "#6C8EBF")
-            .attr("rx", 4)  // 모서리 둥글게
-            .attr("ry", 4)  // 모서리 둥글게
-            .style("filter", "drop-shadow(0px 2px 3px rgba(0,0,0,0.1))") // 그림자 효과
-            .append("title")
-            .text(d => `${d.name}\n값: ${d.value.toFixed(2)}`)
-            .select(function() { return this.parentNode; })
-            .on("mouseover", function() {
-                d3.select(this)
-                    .attr("fill", "#4A6FA5")
-                    .style("filter", "drop-shadow(0px 4px 6px rgba(0,0,0,0.2))");
-            })
-            .on("mouseout", function() {
-                d3.select(this)
-                    .attr("fill", "#6C8EBF")
-                    .style("filter", "drop-shadow(0px 2px 3px rgba(0,0,0,0.1))");
+    if (augType !== "default") {
+        svg.selectAll(".bar")
+            .filter(function() {
+                // x 위치를 기반으로 해당 augType의 막대들을 찾음
+                const xPos = d3.select(this).attr("x");
+                const xScale = d3.scaleBand()
+                    .domain(["koGPT2", "base fine-tuned", "SR", "RI", "RS", "RD"])
+                    .range([0, svg.node().getBoundingClientRect().width - 50]);
+                const barGroup = xScale.domain()[Math.floor(xPos / xScale.step())];
+                return barGroup === augType;
             })
             .transition()
-            .duration(1000)
-            .ease(d3.easeLinear)
-            .attr("y", d => y(d.value))
-            .attr("height", d => Math.max(0, height - y(d.value)));
-    })
-    .catch(error => {
-        console.error("Error fetching perplexity data:", error);
-    });
+            .duration(300)
+            .style("stroke", "black")
+            .style("stroke-width", 0.1);
+    }
 }
 
 async function updateTSNE(augType) {
@@ -296,16 +200,30 @@ async function updateAugData(augType) {
             // 카드 컨테이너 초기화
             augContainer.selectAll("*").remove();
 
+            var origin = fetchdata[index].origin;
+            var aug = fetchdata[index].aug;
+
+            // if($(".aug-select").val() == "default"){
+            //     origin = "증강 전 질문";
+            //     aug = "증강 후 질문";
+            // }
+
+            console.log(origin, aug);
+
             // 원본 질문
             augContainer.append("div")
                 .attr("class", "aug-card-header")
-                .html(`<div class="aug-card-label">origin Q</div><div class="aug-card-content">${fetchdata[index].origin}</div>`);
+                .html(`<div class="aug-card-label">origin Q</div><div class="aug-card-content">${origin}</div>`);
 
             // 증강된 질문
             augContainer.append("div")
                 .attr("class", "aug-card-body")
-                .html(`<div class="aug-card-label">aug Q</div><div class="aug-card-content">${fetchdata[index].aug}</div>`);
+                .html(`<div class="aug-card-label">aug Q</div><div class="aug-card-content">${aug}</div>`);
                     
+            // if($(".aug-select").val() == "default"){
+            //     $(".aug-card-content").css("opacity", 0.54);
+            // }
+            
             // 버튼 활성화/비활성화
             d3.select(".aug-prev-btn")
                 .classed("disabled", currentIndex === 0)
@@ -317,11 +235,15 @@ async function updateAugData(augType) {
 
         // 초기 카드 표시
         showCard(0);
-        
-
 }
 
-async function updateChatbot() {
+async function updateChatbot(augType) {
+    if(augType != "default"){
+        $("#chatbot-title").text(augType + " Chatbot");
+    }
+    else{
+        $("#chatbot-title").text("Chatbot");
+    }
     $(".chatbot-input").val("");
     $(".chatbot-output").text("여기에 답변이 표시됩니다.");
     $(".chatbot-output").css("opacity", 0.54);
