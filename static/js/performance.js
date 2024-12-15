@@ -20,11 +20,11 @@ $(document).ready(async function() {
             'chrF': '#99CC99'
         };
 
-        // 기본 위치 설정
+        // SVG 생성
         const svg = d3.select("#performance")
             .append("svg")
-            .attr("width", width+margin.left+margin.right)
-            .attr("height", height+margin.top+margin.bottom)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -36,6 +36,7 @@ $(document).ready(async function() {
             .text("Augmentation")
             .attr("font-family", "Poppins, Noto Sans KR, sans-serif");
 
+        // X축 스케일
         let x = d3.scaleBand()
             .domain(data.map(d => d.name))
             .range([0, width])
@@ -46,11 +47,14 @@ $(document).ready(async function() {
             .range([0, x.bandwidth()])
             .padding(0.05);
 
+        // Y축 스케일을 데이터의 최대값에 맞게 동적으로 설정
+        const maxVal = d3.max(data, d => d3.max(metrics, metric => d[metric]));
         const y = d3.scaleLinear()
-            .domain([0, 80])
+            .domain([0, maxVal])  // 최대값을 기준으로 domain 설정
+            .nice()               // 축 스케일을 보기 좋게 정리
             .range([height, 0]);
 
-        // 차트 배경에 그리드 추가
+        // 차트 배경 그리드
         svg.append("g")
             .attr("class", "grid")
             .call(d3.axisLeft(y)
@@ -60,7 +64,7 @@ $(document).ready(async function() {
             .style("stroke-dasharray", "3,3")
             .style("opacity", 0.1);
 
-        // x축 스타일 개선
+        // X축
         svg.append("g")
             .attr("class", "x-axis")
             .attr("transform", `translate(0,${height})`)
@@ -70,7 +74,7 @@ $(document).ready(async function() {
             .style("font-size", "11px")
             .style("font-weight", "500");
 
-        // y축 스타일 개선
+        // Y축
         svg.append("g")
             .call(d3.axisLeft(y))
             .attr("font-family", "Poppins, Noto Sans KR, sans-serif")
@@ -79,29 +83,29 @@ $(document).ready(async function() {
             .style("font-size", "11px")
             .style("font-weight", "500");
 
+        // 범례
         const legend = svg.append("g")
             .attr("class", "legend")
             .attr("transform", `translate(${width - 100}, -50)`);
 
-        // 배경 사각형 추가
         legend.append("rect")
-            .attr("width", 100)  
+            .attr("width", 100)
             .attr("height", metrics.length * 20 + 10)
             .attr("fill", "white")
             .attr("rx", 5)
             .attr("ry", 5)
             .style("stroke", "black")
             .style("stroke-width", 1);
-            
+
         metrics.forEach((metric, i) => {
             const legendRow = legend.append("g")
                 .attr("transform", `translate(5, ${i * 20 + 5})`);
-            
+
             legendRow.append("rect")
                 .attr("width", 15)
                 .attr("height", 15)
                 .attr("fill", colors[metric]);
-            
+
             legendRow.append("text")
                 .attr("x", 20)
                 .attr("y", 12)
@@ -110,8 +114,7 @@ $(document).ready(async function() {
                 .attr("font-family", "Poppins, Noto Sans KR, sans-serif");
         });
 
-
-    
+        // 바 생성
         data.forEach(function(d) {
             metrics.forEach(function(metric) {
                 const bar = svg.append("rect")
