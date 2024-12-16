@@ -1,9 +1,10 @@
 import pandas as pd
-from flask import Flask, render_template, jsonify, request
-from utils import calc_perplexity, tsne_visualization
+from flask import Flask, render_template, jsonify, request, send_file
 import requests
 from flask_restx import Api, Resource, fields
 from flask_swagger_ui import get_swaggerui_blueprint
+from werkzeug.utils import secure_filename
+import os, csv
 import re
 import json
 import math
@@ -19,6 +20,95 @@ def index():
 def dashboard():
     return render_template('dashboard.html')
 
+
+USER_DATA = './static/data/users'
+os.makedirs(USER_DATA, exist_ok=True)
+app.config['USER_DATA'] = USER_DATA
+
+REMOTE_SERVER_URL = "https://team-e.gpu.seongbum.com"
+REMOTE_SERVER_UPLOAD_ROUTE = "/flask/upload"
+REMOTE_SERVER_AUGMENT_DOWNLOAD_ROUTE = "/flask/augment_download"
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    if 'file' not in request.files:
+        return jsonify({'error':'No file in request'}), 400
+    
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({'error':'No selected file'}), 400
+    
+    if not file.filename.endswith('.csv'):
+        return jsonify({'error':'Only CSV files are allowed'}), 400
+    
+    try:
+        # 1. 로컬에 사용자 업로드 파일 저장
+        new_filename = "uploaded_file.csv"
+        filepath = os.path.join(app.config['USER_DATA'], new_filename)
+        file.save(filepath)
+
+         # 2. 파일을 원격 서버로 전송
+        with open(filepath, 'rb') as f:
+            files = {'file': (new_filename, f)}
+            remote_response = requests.post(
+                f"{REMOTE_SERVER_URL}{REMOTE_SERVER_UPLOAD_ROUTE}", 
+                files=files
+            )
+
+        if remote_response.status_code != 200:
+            return jsonify({'error': 'Failed to send file to remote server'}), 500
+        
+        received_files = []
+        for aug_type in ['SR', 'RI', 'RS', 'RD']:
+            response = requests.get(
+                f"{REMOTE_SERVER_URL}{REMOTE_SERVER_AUGMENT_DOWNLOAD_ROUTE}", 
+                params={'aug_type': aug_type}
+            )
+            if response.status_code == 200:
+                # 받은 파일을 로컬에 저장
+                file_content = response.content
+                file_name = f"data_{aug_type.lower()}.csv"
+                file_path = os.path.join(app.config['USER_DATA'], file_name)
+                with open(file_path, 'wb') as local_file:
+                    local_file.write(file_content)
+                received_files.append(file_path)
+            else:
+                return jsonify({'error': f'Failed to download file for augType: {aug_type}'}), 500
+
+        return jsonify({
+            'message': 'File uploaded and augmented files saved successfully',
+            'saved_files': received_files
+        }), 200
+        
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/download', methods=['GET'])
+def download():
+    aug_type = request.args.get('augType', 'default')
+
+    if aug_type == 'default':
+        return jsonify({'error':'증강 기법을 선택해주세요.'}), 400
+    
+    try:
+        filepath = os.path.join(USER_DATA, f'data_{aug_type.lower()}.csv')
+
+        if not os.path.exists(filepath):
+            return jsonify({'error': f'File not found for augType: {aug_type}'}), 404
+
+        # 클라이언트로 CSV 파일 전송
+        return send_file(
+            filepath,
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name='augmented_dataset.csv'
+        )
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 
 # Flask-RESTX API 초기화
 api = Api(
