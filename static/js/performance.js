@@ -1,15 +1,22 @@
 $(document).ready(async function() {
-    await fetch("/performance")
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
+    //await fetch("/performance")
+    //.then(response => response.json())
+    //.then(data => {
+    //    console.log(data);
+        var data= [{'name': 'RD', 'perplexity': 2.1631635930458684, 'BLEU': 1.3028473853162348, 'ROUGE': 3.5672985835467608, 'METEOR': 6.918680577362711, 'chrF': 1.1706048811106093}, 
+            {'name': 'RI', 'perplexity': 2.1854187068400326, 'BLEU': 0.0, 'ROUGE': 4.593150060037313, 'METEOR': 6.706673743109719, 'chrF': 1.163582429300335}, 
+            {'name': 'RS', 'perplexity': 2.2175551883072706, 'BLEU': 0.7139956345345766, 'ROUGE': 4.013248052013641, 'METEOR': 7.006103850309138, 'chrF': 1.1766361610492577}, 
+            {'name': 'SR', 'perplexity': 2.2175551883072706, 'BLEU': 1.0435440746089515, 'ROUGE': 4.692280590570959, 'METEOR': 7.1404915847479264, 'chrF': 1.1779911212829703}, 
+            {'name': 'default', 'perplexity': 2.129894260275194, 'BLEU': 0.9182481987735646, 'ROUGE': 4.514870450666421, 'METEOR': 6.764192209468793, 'chrF': 1.1750207050385013}];
         // 한 칸에 해당하는 크기 설정
         const cardBody = $("#performance").closest(".card-body");
-        const margin = {top: 50, right: 20, bottom: 40, left:30};
+        const margin = {top: 50, right: 20, bottom: 40, left:40};
         var height = cardBody.height() - margin.top - margin.bottom;
         var width = cardBody.width() - margin.left - margin.right;
         d3.select("#performance").select("svg").remove();
         console.log("performance : " + cardBody.height(), cardBody.width());
+
+
 
         const metrics = ['perplexity', 'BLEU', 'ROUGE', 'METEOR', 'chrF'];
         const colors = {
@@ -26,8 +33,11 @@ $(document).ready(async function() {
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
+            .attr("transform", `translate(${margin.left},${margin.top})`)
+            .datum(data);
 
+        
+        
         svg.append("text")
             .attr("x", width - 50)
             .attr("y", height + margin.bottom -10)
@@ -48,10 +58,9 @@ $(document).ready(async function() {
             .padding(0.05);
 
         // Y축 스케일을 데이터의 최대값에 맞게 동적으로 설정
-        const maxVal = d3.max(data, d => d3.max(metrics, metric => d[metric]));
+        const maxVal = d3.max(data, d => d3.max(metrics, metric => d[metric] * 1.2));
         const y = d3.scaleLinear()
             .domain([0, maxVal])  // 최대값을 기준으로 domain 설정
-            .nice()               // 축 스케일을 보기 좋게 정리
             .range([height, 0]);
 
         // 차트 배경 그리드
@@ -86,11 +95,11 @@ $(document).ready(async function() {
         // 범례
         const legend = svg.append("g")
             .attr("class", "legend")
-            .attr("transform", `translate(${width - 100}, -50)`);
+            .attr("transform", `translate(${width - 480}, -30)`);
 
         legend.append("rect")
-            .attr("width", 100)
-            .attr("height", metrics.length * 20 + 10)
+            .attr("width", 480)
+            .attr("height", 30)
             .attr("fill", "white")
             .attr("rx", 5)
             .attr("ry", 5)
@@ -99,7 +108,7 @@ $(document).ready(async function() {
 
         metrics.forEach((metric, i) => {
             const legendRow = legend.append("g")
-                .attr("transform", `translate(5, ${i * 20 + 5})`);
+                .attr("transform", `translate(${i * 100 + 5}, 5)`);
 
             legendRow.append("rect")
                 .attr("width", 15)
@@ -119,6 +128,11 @@ $(document).ready(async function() {
             metrics.forEach(function(metric) {
                 const bar = svg.append("rect")
                     .attr("class", "bar")
+                    .data([{ 
+                        name: d.name, 
+                        metric: metric, 
+                        value: d[metric]
+                      }])
                     .attr("x", x(d.name) + xSubgroup(metric))
                     .attr("y", height)
                     .attr("width", xSubgroup.bandwidth())
@@ -126,7 +140,7 @@ $(document).ready(async function() {
                     .attr("fill", colors[metric])
                     .attr("rx", 1)
                     .attr("ry", 1)
-                    .style("filter", "drop-shadow(0px 2px 3px rgba(0,0,0,0.1))");
+                    .style("filter", "drop-shadow(0px 2px 3px rgba(0,0,0,0.1))")
                 
                 bar.append("title")
                     .text(`${d.name} - ${metric}: ${d[metric]?.toFixed(2)}`);
@@ -148,8 +162,8 @@ $(document).ready(async function() {
                     .attr("height", height - y(d[metric]));
             });
         });
-    })
-    .catch(error => {
-        console.error("Error fetching performance data:", error);
-    });
+    //})
+    //.catch(error => {
+    //    console.error("Error fetching performance data:", error);
+    //});
 });

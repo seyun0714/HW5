@@ -23,29 +23,43 @@ async function updateDashboard(augType) {
 }
 
 function updatePerformance(augType) {
+    const metrics = ['perplexity', 'BLEU', 'ROUGE', 'METEOR', 'chrF'];
+    const colors = {
+        'perplexity': '#6C8EBF',
+        'BLEU': '#B4C7E7',
+        'ROUGE': '#FFB366',
+        'METEOR': '#FF9999',
+        'chrF': '#99CC99'
+      };
     const svg = d3.select("#performance").select("svg");
-    
-    svg.selectAll(".bar")
-        .transition()
-        .duration(300)
-        .style("stroke", "none");
+    svg.selectAll(".line").remove();
 
-    if (augType !== "default") {
-        svg.selectAll(".bar")
-            .filter(function() {
-                // x 위치를 기반으로 해당 augType의 막대들을 찾음
-                const xPos = d3.select(this).attr("x");
-                const xScale = d3.scaleBand()
-                    .domain(["koGPT2", "base fine-tuned", "SR", "RI", "RS", "RD"])
-                    .range([0, svg.node().getBoundingClientRect().width - 50]);
-                const barGroup = xScale.domain()[Math.floor(xPos / xScale.step())];
-                return barGroup === augType;
-            })
-            .transition()
-            .duration(300)
-            .style("stroke", "black")
-            .style("stroke-width", 0.1);
-    }
+    const height = svg.node().getBoundingClientRect().height - 90;
+    const maxValue = d3.max(svg.selectAll(".bar").data(), d => d.value * 1.2);
+    const y = d3.scaleLinear()
+    .domain([0, maxValue])
+    .range([height, 0]);
+
+        if (augType !== "default") {
+            metrics.forEach(metric => {
+              // 특정 augType, 특정 metric을 가진 bar 데이터 선택
+              let matched = svg.selectAll(".bar")
+                .data()
+                .filter(d => d.name === augType && d.metric === metric);
+            
+              if (matched.length > 0 && !isNaN(matched[0].value)) {
+                svg.append("line")
+                  .attr("class", "line")
+                  .attr("x1", 0)
+                  .attr("y1", y(matched[0].value)+50)
+                  .attr("x2", svg.node().getBoundingClientRect().width)
+                  .attr("y2", y(matched[0].value)+50)
+                  .style("stroke", "#4A4A4A")
+                  .style("stroke-dasharray", "3,3")
+                  .style("opacity", 0.8);
+              }
+            });
+          }
 }
 
 async function updateTSNE(augType) {
