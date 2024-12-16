@@ -223,7 +223,7 @@ label{
 /* ------------------------------증강 기법 선택------------------------------ */
 .select-container {
     position: absolute;
-    top: 2%;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
     width: 500px;
@@ -241,20 +241,12 @@ label{
     gap: 5px;
 }
 
-.aug-select-container, .aug-range-container{
+.aug-select-container{
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-}
-
-
-
-#aug-range{
-    width: 60%;
-    height: 10px;
-    background-color: #dddddd;
 }
 
 

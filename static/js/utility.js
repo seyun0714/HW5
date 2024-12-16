@@ -39,10 +39,6 @@ $(document).ready(function() {
         }).tooltip('show');
     });
 
-     $("#aug-range").on("input", function() {
-        $("#aug-range-value").text(this.value * 10 + "%");
-    });
-
     $('#info-chatbot img').hover(function() {
         // hover 시 tooltip 표시
         $(this).attr('data-bs-title', "증강된 데이터로<br> fine-tuning한 모델을<br> 사용한 챗봇입니다.");

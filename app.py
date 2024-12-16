@@ -215,7 +215,7 @@ def convert_metrics_dict_to_list_triple_log_chrF_scaled(metrics_dict):
         트리플 로그 변환: log(log(log(x+1)+1)+1)
         x는 0 이상 가정
         """
-        return math.log(math.log(math.log(x + 1.0) + 1.0) + 1.0)
+        return math.log(math.log(x + 1.0) + 1.0)
 
     results_list = []
 
@@ -227,11 +227,11 @@ def convert_metrics_dict_to_list_triple_log_chrF_scaled(metrics_dict):
         rouge_info = metrics_data.get("rouge", {})
         rouge_val = rouge_info.get("rougeLsum", 0.0)
 
-        triple_log_perp = triple_log(perp_val) * 0.01
-        triple_log_bleu = triple_log(metrics_data.get("bleu", 0.0))
-        triple_log_rouge = triple_log(rouge_val)
-        triple_log_meteor = triple_log(metrics_data.get("meteor", 0.0))
-        triple_log_chrf = triple_log(metrics_data.get("chrf", 0.0)) * 0.1
+        triple_log_perp = triple_log(perp_val)
+        triple_log_bleu = triple_log(metrics_data.get("bleu", 0.0)) * 100
+        triple_log_rouge = triple_log(rouge_val) * 100
+        triple_log_meteor = triple_log(metrics_data.get("meteor", 0.0)) * 100
+        triple_log_chrf = triple_log(metrics_data.get("chrf", 0.0))
 
         new_item = {
             "name": model_name,
