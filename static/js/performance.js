@@ -1,8 +1,8 @@
 $(document).ready(async function() {
-    //await fetch("/performance")
-    //.then(response => response.json())
-    //.then(data => {
-    //    console.log(data);
+    await fetch("/performance")
+    .then(response => response.json())
+    .then(data => {
+       console.log(data);
         var data= [{'name': 'RD', 'perplexity': 2.1631635930458684, 'BLEU': 1.3028473853162348, 'ROUGE': 3.5672985835467608, 'METEOR': 6.918680577362711, 'chrF': 1.1706048811106093}, 
             {'name': 'RI', 'perplexity': 2.1854187068400326, 'BLEU': 0.0, 'ROUGE': 4.593150060037313, 'METEOR': 6.706673743109719, 'chrF': 1.163582429300335}, 
             {'name': 'RS', 'perplexity': 2.2175551883072706, 'BLEU': 0.7139956345345766, 'ROUGE': 4.013248052013641, 'METEOR': 7.006103850309138, 'chrF': 1.1766361610492577}, 
@@ -162,8 +162,8 @@ $(document).ready(async function() {
                     .attr("height", height - y(d[metric]));
             });
         });
-    //})
-    //.catch(error => {
-    //    console.error("Error fetching performance data:", error);
-    //});
+    })
+    .catch(error => {
+       console.error("Error fetching performance data:", error);
+    });
 });
