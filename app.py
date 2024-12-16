@@ -11,7 +11,6 @@ import math
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def index():
     return render_template('file.html')
@@ -104,7 +103,7 @@ def download():
             filepath,
             mimetype='text/csv',
             as_attachment=True,
-            download_name='augmented_dataset.csv'
+            download_name=f'data_{aug_type.lower()}.csv'
         )
     except Exception as e:
         return jsonify({'error': str(e)}), 500
