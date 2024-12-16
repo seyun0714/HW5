@@ -163,12 +163,14 @@ function hideLoading() {
 // 파일 업로드 처리 함수 내부
 function handleFileUpload(file) {
     console.log(file, file.name, file.type);
-    const fileData = new File([file], file.name, { type: file.type });
+    const formData = new FormData();
+    formData.append('file', file)
+    //const fileData = new File([file], file.name, { type: file.type });
     showLoading(); // 로딩 시작
 
     fetch('/upload', {
         method: 'POST',
-        body: fileData
+        body: formData
     })
     .then(response => {
         if(response.ok) {
@@ -176,16 +178,14 @@ function handleFileUpload(file) {
             localStorage.setItem('dataset-name', file.name);
             window.location.href = '/dashboard';
         } else {
-            hideLoading();
-            localStorage.setItem('dataset-name', file.name);
-            window.location.href = '/dashboard';
-            alert('파일 업로드에 실패했습니다.');
+            return response.json().then(data => {
+                hideLoading(); // 로딩 종료
+                alert(`파일 업로드에 실패했습니다. 에러: ${data.error}`);
+            });
         }
     })
     .catch(error => {
         hideLoading(); // 에러 시에도 로딩 종료
-        localStorage.setItem('dataset-name', file.name);
-        window.location.href = '/dashboard';
-        alert('파일 업로드에 실패했습니다.' + error);
-    })
+        alert('파일 업로드에 실패했습니다. ' + error);
+    });
 }
