@@ -5,6 +5,9 @@ from flask_restx import Api, Resource, fields
 from flask_swagger_ui import get_swaggerui_blueprint
 from werkzeug.utils import secure_filename
 import os, csv
+import re
+import json
+import math
 
 app = Flask(__name__)
 
@@ -147,7 +150,7 @@ class TSNEVisualization(Resource):
 
             # 응답 데이터를 JSON 형식으로 파싱
             tsne_data = response.json()
-            print(tsne_data)
+            #print(tsne_data)
             
             return {
                 "message":"fetch Done.",
@@ -176,9 +179,81 @@ class TSNEVisualization(Resource):
                 "message": "Invalid JSON response from remote server."
             }, 500
 
+import math
 
+def convert_metrics_dict_to_list_triple_log_chrF_scaled(metrics_dict):
+    """
+    트리플 로그 변환: y = log(log(log(x+1)+1)+1).
+    - BLEU, ROUGE, METEOR, perplexity 모두 동일하게 트리플 로그
+    - chrF만 트리플 로그 변환 후 최종값에 *0.1 적용
+    - perplexity는 딕셔너리에 반드시 존재한다고 가정 (검사 로직 없음)
+
+    Args:
+      metrics_dict (dict): {
+        'RD': {
+           'bleu': 0.0131, 'chrf': 8.1354, 'meteor':0.0687,
+           'rouge': {'rougeLsum':0.0090}
+        }, ...
+      }
+      perplexities (dict): {모델명: 26.9, ...} - 해당 모델명을 키로 반드시 존재한다고 가정
+
+    Returns:
+      list[dict]: [
+        {
+          "name": 모델명,
+          "perplexity": tripleLog(...),
+          "BLEU": tripleLog(...),
+          "ROUGE": tripleLog(...),
+          "METEOR": tripleLog(...),
+          "chrF": tripleLog(...) * 0.1
+        },
+        ...
+      ]
+    """
+
+    def triple_log(x: float):
+        """
+        트리플 로그 변환: log(log(log(x+1)+1)+1)
+        x는 0 이상 가정
+        """
+        return math.log(math.log(math.log(x + 1.0) + 1.0) + 1.0)
+
+    results_list = []
+
+    for model_name, metrics_data in metrics_dict.items():
+        # perplexities 딕셔너리에 model_name 키가 반드시 있다고 가정
+        perp_val = metrics_data['perplexity'];
+
+        # ROUGE에서 'rougeLsum'만 사용
+        rouge_info = metrics_data.get("rouge", {})
+        rouge_val = rouge_info.get("rougeLsum", 0.0)
+
+        triple_log_perp = triple_log(perp_val) * 0.01
+        triple_log_bleu = triple_log(metrics_data.get("bleu", 0.0))
+        triple_log_rouge = triple_log(rouge_val)
+        triple_log_meteor = triple_log(metrics_data.get("meteor", 0.0))
+        triple_log_chrf = triple_log(metrics_data.get("chrf", 0.0)) * 0.1
+
+        new_item = {
+            "name": model_name,
+            "perplexity": triple_log_perp,
+            "BLEU": triple_log_bleu,
+            "ROUGE": triple_log_rouge,
+            "METEOR": triple_log_meteor,
+            "chrF": triple_log_chrf
+        }
+        results_list.append(new_item)
+
+    return results_list
+
+REMOTE_SERVER_PERFORMANCE = "/flask/performance"
 @app.route('/performance')
 def performance():
+    response = requests.get(REMOTE_SERVER_URL + REMOTE_SERVER_PERFORMANCE)  # , json=augmentation_type)
+    data = response.json()
+    converted_data = convert_metrics_dict_to_list_triple_log_chrF_scaled(data)
+    print(converted_data)
+    return jsonify(converted_data)
     return jsonify([
             {"name": "koGPT2", "perplexity": 50.3, "BLEU": 52.2, "ROUGE": 46.3, "METEOR": 38.4, "chrF": 42.2},
             {"name": "base fine-tuned", "perplexity": 45.2, "BLEU": 47.8, "ROUGE": 42.1, "METEOR": 35.2, "chrF": 38.9},
