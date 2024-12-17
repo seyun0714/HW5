@@ -1,10 +1,11 @@
 $(document).ready(async function(){
+    $("#tsne").closest(".card-body").find(".container-loading-spinner").show();
     await fetch("/data_routes/t-sne")
     .then(response => response.json())
     .then(data =>{
+       $("#tsne").closest(".card-body").find(".container-loading-spinner").hide();
        tsneData = data.data
-       console.log(tsneData)
-       
+       //console.log(tsneData)
        const cardBody = $("#tsne").closest(".card-body");
        const margin = {top: 20, right: 20, bottom: 20, left: 20};
        var height = cardBody.height() - margin.top - margin.bottom;
@@ -20,8 +21,6 @@ $(document).ready(async function(){
            .append("g")
            .attr("transform", `translate(${margin.left},${margin.top})`);
    
-       // t-SNE JSON 데이터 불러오기
-       //d3.json("/static/json/tsne_visualization.json").then(data => {
            // X, Y 범위 계산
            const xExtent = d3.extent(tsneData, d => d.x);
            const yExtent = d3.extent(tsneData, d => d.y);
@@ -36,15 +35,19 @@ $(document).ready(async function(){
                .range([height, margin.top]);
    
            // 데이터 포인트 추가
-           svg.selectAll(".point")
+           const points = svg.selectAll(".point")
                .data(tsneData)
                .join("circle")
                .attr("class", "point")
                .attr("cx", d => xScale(d.x))
                .attr("cy", d => yScale(d.y))
-               .attr("r", 5)
-               .attr("fill", d => d.color);
-   
+               .attr("r", 0)
+               .attr("fill", d => d.color)
+               .style("opacity", 0.7)
+               .transition()
+               .duration(1000)
+               .delay((d, i) => i)
+               .attr("r", 5);
            
            // Legend 추가
            const legendData = [
@@ -54,14 +57,23 @@ $(document).ready(async function(){
                {name: "RS", color: "#2c7fb8"},
                {name: "RD", color: "#253494"}
            ];
-   
+
            const legendGroup = svg.append("g")
                .attr("class", "legend")
-               .attr("transform", `translate(${margin.left}, 0)`); // 좌상단 위치
+               .attr("transform", `translate(${margin.left}, -20)`); // 좌상단 위치
+
+            legendGroup.append("rect")
+                .attr("width", 80)
+                .attr("height", 110)
+                .attr("fill", "white")
+                .attr("rx", 5)
+                .attr("ry", 5)
+                .style("stroke", "black")
+                .style("stroke-width", 1);
    
            legendData.forEach((d, i) => {
                const legendItem = legendGroup.append("g")
-                   .attr("transform", `translate(0, ${i * 20})`); // 각 항목 간격
+                   .attr("transform", `translate(10, ${10 + i * 20})`); // 각 항목 간격
    
                // 색상 박스
                legendItem.append("rect")

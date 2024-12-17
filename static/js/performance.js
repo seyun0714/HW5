@@ -1,13 +1,11 @@
 $(document).ready(async function() {
+    $("#performance").closest(".card-body").find(".container-loading-spinner").show();
     await fetch("/performance")
     .then(response => response.json())
     .then(data => {
        console.log(data);
-        var data= [{'name': 'RD', 'perplexity': 2.1631635930458684, 'BLEU': 1.3028473853162348, 'ROUGE': 3.5672985835467608, 'METEOR': 6.918680577362711, 'chrF': 1.1706048811106093}, 
-            {'name': 'RI', 'perplexity': 2.1854187068400326, 'BLEU': 0.0, 'ROUGE': 4.593150060037313, 'METEOR': 6.706673743109719, 'chrF': 1.163582429300335}, 
-            {'name': 'RS', 'perplexity': 2.2175551883072706, 'BLEU': 0.7139956345345766, 'ROUGE': 4.013248052013641, 'METEOR': 7.006103850309138, 'chrF': 1.1766361610492577}, 
-            {'name': 'SR', 'perplexity': 2.2175551883072706, 'BLEU': 1.0435440746089515, 'ROUGE': 4.692280590570959, 'METEOR': 7.1404915847479264, 'chrF': 1.1779911212829703}, 
-            {'name': 'default', 'perplexity': 2.129894260275194, 'BLEU': 0.9182481987735646, 'ROUGE': 4.514870450666421, 'METEOR': 6.764192209468793, 'chrF': 1.1750207050385013}];
+       $("#performance").closest(".card-body").find(".container-loading-spinner").hide();
+
         // 한 칸에 해당하는 크기 설정
         const cardBody = $("#performance").closest(".card-body");
         const margin = {top: 50, right: 20, bottom: 40, left:40};

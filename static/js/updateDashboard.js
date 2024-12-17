@@ -18,21 +18,17 @@ async function updateDashboard(augType) {
         updateTSNE(augType),
         updateAugData(augType),
         updateChatbot(augType),
-        updateUtility(augType)
     ]);
 }
 
 function updatePerformance(augType) {
     const metrics = ['perplexity', 'BLEU', 'ROUGE', 'METEOR', 'chrF'];
-    const colors = {
-        'perplexity': '#6C8EBF',
-        'BLEU': '#B4C7E7',
-        'ROUGE': '#FFB366',
-        'METEOR': '#FF9999',
-        'chrF': '#99CC99'
-      };
+
     const svg = d3.select("#performance").select("svg");
     svg.selectAll(".line").remove();
+    if(augType == "default"){
+        return;
+    }
 
     const height = svg.node().getBoundingClientRect().height - 90;
     const maxValue = d3.max(svg.selectAll(".bar").data(), d => d.value * 1.2);
@@ -63,7 +59,20 @@ function updatePerformance(augType) {
 }
 
 async function updateTSNE(augType) {
-    // todo : 강조만 변경
+    const svg = d3.select("#tsne").select("svg");
+    const points = svg.selectAll(".point");
+
+    if(augType == "default") {
+        // 모든 포인트를 보이게 하고 원래 색상으로 복원
+        points
+            .style("opacity", 1)
+            .style("fill", d => d.color);
+    } else {
+        // 선택된 augType과 origin만 보이게 하고 나머지는 숨김
+        points
+            .style("opacity", d => (d.legend === augType || d.legend === "origin") ? 1 : 0)
+            .style("fill", d => d.color);
+    }
 }
     
 
@@ -163,15 +172,4 @@ async function updateChatbot(augType) {
     $(".chatbot-input").val("");
     $(".chatbot-output").text("여기에 답변이 표시됩니다.");
     $(".chatbot-output").css("opacity", 0.54);
-}
-
-async function updateUtility(augType) {
-    if(augType != "default"){
-        $(".csv-download-button").removeClass("disabled");
-        $(".csv-download-text").text(augType + ".csv 다운로드");
-    }
-    else{
-        $(".csv-download-button").addClass("disabled");
-        $(".csv-download-text").text("증강 데이터셋 다운로드");
-    }
 }
