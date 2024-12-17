@@ -27,5 +27,6 @@ function getChatbotResult(augType, content){
     .then(data => {
         $(".chatbot-output").text(data.data.generated_text);
         $(".chatbot-output").css("opacity", 1);
+        $(".chatbot-output").css("font-family", "Poppins, Noto Sans KR, sans-serif");
     });
 }

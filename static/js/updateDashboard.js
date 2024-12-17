@@ -163,12 +163,7 @@ async function updateAugData(augType) {
 }
 
 async function updateChatbot(augType) {
-    if(augType != "default"){
-        $("#chatbot-title h5").text(augType + " Chatbot");
-    }
-    else{
-        $("#chatbot-title h5").text("Base Chatbot");
-    }
+    $("#chatbot-title h5").text(augType + " Chatbot");
     $(".chatbot-input").val("");
     $(".chatbot-output").text("여기에 답변이 표시됩니다.");
     $(".chatbot-output").css("opacity", 0.54);

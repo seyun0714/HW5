@@ -253,17 +253,8 @@ def performance():
     converted_data = convert_metrics_dict_to_list_triple_log_chrF_scaled(data)
     print(converted_data)
     return jsonify(converted_data)
-    return jsonify([
-            {"name": "koGPT2", "perplexity": 50.3, "BLEU": 52.2, "ROUGE": 46.3, "METEOR": 38.4, "chrF": 42.2},
-            {"name": "base fine-tuned", "perplexity": 45.2, "BLEU": 47.8, "ROUGE": 42.1, "METEOR": 35.2, "chrF": 38.9},
-            {"name": "SR", "perplexity": 40.1, "BLEU": 43.2, "ROUGE": 38.4, "METEOR": 31.5, "chrF": 35.3},
-            {"name": "RI", "perplexity": 35.8, "BLEU": 38.9, "ROUGE": 34.2, "METEOR": 28.1, "chrF": 31.6},
-            {"name": "RS", "perplexity": 31.2, "BLEU": 34.5, "ROUGE": 30.1, "METEOR": 24.8, "chrF": 27.9},
-            {"name": "RD", "perplexity": 26.9, "BLEU": 30.1, "ROUGE": 26.3, "METEOR": 21.4, "chrF": 24.2}
-        ])
-   
 
-    # # request를 통해 증강 종류 확인
+    # # request를 통해 증강 종류 확인   
     # augment_type = request.args.get()
 
     # # 증강 종류에 따라 model_id 지정
