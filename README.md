@@ -37,7 +37,13 @@ git clone https://github.com/seyun0714/HW5.git
 cd HW5
 ```
 
-2. 필요한 패키지를 설치합니다.   
+2. 가상 환경을 만들고 활성화합니다.
+```bash
+python -m venv venv
+source venv/Scripts/activate
+```
+
+3. 필요한 패키지를 설치합니다.   
 ```bash
 pip install -r requirements.txt
 ```
@@ -46,7 +52,6 @@ pip install -r requirements.txt
 애플리케이션을 실행하려면 다음 명령어를 사용하세요:
 ```bash
 python app.py
-flask run
 ```
 
 애플리케이션은 기본적으로 `http://localhost:5000`에서 실행됩니다.
