@@ -6,17 +6,12 @@
             <label id="aug-label" for="aug-select">Augmentation : </label>
             <select class="aug-select">
                 <option value="default">All</option>
-                    <option value="SR">Synonym Replacement</option>
+                <option value="SR">Synonym Replacement</option>
                 <option value="RI">Random Insertion</option>
                 <option value="RS">Random Swap</option>
                 <option value="RD">Random Deletion</option>
             </select>
             <button class="my-btn aug-button">Apply</button>
-        </div>
-        <div class="aug-range-container">
-            <label id="aug-label" for="aug-range">Ratio :</label>
-            <label id="aug-range-value">50%</label>
-            <input type="range" id="aug-range" min="1" max="9" value="5">
         </div>
     </div>  
     <div class="container-fluid">
@@ -29,6 +24,10 @@
                     </div>
                     <div class="card-body">
                         <div id="performance"></div>
+                        <div class="container-loading-spinner" style="display: none;">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
                     </div>
                 </div>
                 <div class="card" style="height: 200px;">
@@ -88,6 +87,10 @@
                     </div>
                     <div class="card-body">
                         <div id="tsne"></div>
+                        <div class="container-loading-spinner" style="display: none;">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
                     </div>
                 </div>
             </div>

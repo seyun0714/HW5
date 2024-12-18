@@ -18,38 +18,61 @@ async function updateDashboard(augType) {
         updateTSNE(augType),
         updateAugData(augType),
         updateChatbot(augType),
-        updateUtility(augType)
     ]);
 }
 
 function updatePerformance(augType) {
-    const svg = d3.select("#performance").select("svg");
-    
-    svg.selectAll(".bar")
-        .transition()
-        .duration(300)
-        .style("stroke", "none");
+    const metrics = ['perplexity', 'BLEU', 'ROUGE', 'METEOR', 'chrF'];
 
-    if (augType !== "default") {
-        svg.selectAll(".bar")
-            .filter(function() {
-                // x 위치를 기반으로 해당 augType의 막대들을 찾음
-                const xPos = d3.select(this).attr("x");
-                const xScale = d3.scaleBand()
-                    .domain(["koGPT2", "base fine-tuned", "SR", "RI", "RS", "RD"])
-                    .range([0, svg.node().getBoundingClientRect().width - 50]);
-                const barGroup = xScale.domain()[Math.floor(xPos / xScale.step())];
-                return barGroup === augType;
-            })
-            .transition()
-            .duration(300)
-            .style("stroke", "black")
-            .style("stroke-width", 0.1);
+    const svg = d3.select("#performance").select("svg");
+    svg.selectAll(".line").remove();
+    if(augType == "default"){
+        return;
     }
+
+    const height = svg.node().getBoundingClientRect().height - 90;
+    const maxValue = d3.max(svg.selectAll(".bar").data(), d => d.value * 1.2);
+    const y = d3.scaleLinear()
+    .domain([0, maxValue])
+    .range([height, 0]);
+
+        if (augType !== "default") {
+            metrics.forEach(metric => {
+              // 특정 augType, 특정 metric을 가진 bar 데이터 선택
+              let matched = svg.selectAll(".bar")
+                .data()
+                .filter(d => d.name === augType && d.metric === metric);
+            
+              if (matched.length > 0 && !isNaN(matched[0].value)) {
+                svg.append("line")
+                  .attr("class", "line")
+                  .attr("x1", 0)
+                  .attr("y1", y(matched[0].value)+50)
+                  .attr("x2", svg.node().getBoundingClientRect().width)
+                  .attr("y2", y(matched[0].value)+50)
+                  .style("stroke", "#4A4A4A")
+                  .style("stroke-dasharray", "3,3")
+                  .style("opacity", 0.8);
+              }
+            });
+          }
 }
 
 async function updateTSNE(augType) {
-    // todo : 강조만 변경
+    const svg = d3.select("#tsne").select("svg");
+    const points = svg.selectAll(".point");
+
+    if(augType == "default") {
+        // 모든 포인트를 보이게 하고 원래 색상으로 복원
+        points
+            .style("opacity", 1)
+            .style("fill", d => d.color);
+    } else {
+        // 선택된 augType과 origin만 보이게 하고 나머지는 숨김
+        points
+            .style("opacity", d => (d.legend === augType || d.legend === "origin") ? 1 : 0)
+            .style("fill", d => d.color);
+    }
 }
     
 
@@ -140,24 +163,8 @@ async function updateAugData(augType) {
 }
 
 async function updateChatbot(augType) {
-    if(augType != "default"){
-        $("#chatbot-title h5").text(augType + " Chatbot");
-    }
-    else{
-        $("#chatbot-title h5").text("Base Chatbot");
-    }
+    $("#chatbot-title h5").text(augType + " Chatbot");
     $(".chatbot-input").val("");
     $(".chatbot-output").text("여기에 답변이 표시됩니다.");
     $(".chatbot-output").css("opacity", 0.54);
-}
-
-async function updateUtility(augType) {
-    if(augType != "default"){
-        $(".csv-download-button").removeClass("disabled");
-        $(".csv-download-text").text(augType + ".csv 다운로드");
-    }
-    else{
-        $(".csv-download-button").addClass("disabled");
-        $(".csv-download-text").text("증강 데이터셋 다운로드");
-    }
 }

@@ -2,11 +2,7 @@ import pandas as pd
 from flask import Flask, render_template, jsonify, request, send_file
 import requests
 from flask_restx import Api, Resource, fields
-from flask_swagger_ui import get_swaggerui_blueprint
-from werkzeug.utils import secure_filename
-import os, csv
-import re
-import json
+import os
 import math
 
 app = Flask(__name__)
@@ -139,9 +135,6 @@ REMOTE_SERVER_TSNE_ROUTE = "/flask/t-sne"
 class TSNEVisualization(Resource):
     @ns.doc('t_sne_visualization')
     def get(self):
-        #augmentation_type = request.get_json()
-        #print(augmentation_type)
-        
         try:
             # 원격 서버로 POST 요청
             response = requests.get(REMOTE_SERVER_URL + REMOTE_SERVER_TSNE_ROUTE)#, json=augmentation_type)
@@ -155,17 +148,6 @@ class TSNEVisualization(Resource):
                 "message":"fetch Done.",
                 "data":tsne_data
             }, 200
-            # JSON 데이터를 Pandas DataFrame으로 변환
-            #df = pd.DataFrame(tsne_data)
-            
-            # 데이터를 JSON 파일로 저장
-            #save_path = "static/json/"
-            #df.to_json(save_path + 'tsne_visualization.json', orient='records', indent=4, force_ascii=False)
-            
-            #return {
-            #    "message": "t-SNE visualization data saved successfully as JSON.",
-            #    "data_preview": df.head().to_dict(orient='records')  # 데이터 미리보기 반환
-            #}, 200
         except requests.exceptions.RequestException as e:
             # 요청 중 오류가 발생한 경우
             return {
@@ -178,7 +160,6 @@ class TSNEVisualization(Resource):
                 "message": "Invalid JSON response from remote server."
             }, 500
 
-import math
 
 def convert_metrics_dict_to_list_triple_log_chrF_scaled(metrics_dict):
     """
@@ -215,7 +196,7 @@ def convert_metrics_dict_to_list_triple_log_chrF_scaled(metrics_dict):
         트리플 로그 변환: log(log(log(x+1)+1)+1)
         x는 0 이상 가정
         """
-        return math.log(math.log(math.log(x + 1.0) + 1.0) + 1.0)
+        return math.log(math.log(x + 1.0) + 1.0)
 
     results_list = []
 
@@ -227,11 +208,11 @@ def convert_metrics_dict_to_list_triple_log_chrF_scaled(metrics_dict):
         rouge_info = metrics_data.get("rouge", {})
         rouge_val = rouge_info.get("rougeLsum", 0.0)
 
-        triple_log_perp = triple_log(perp_val) * 0.01
-        triple_log_bleu = triple_log(metrics_data.get("bleu", 0.0))
-        triple_log_rouge = triple_log(rouge_val)
-        triple_log_meteor = triple_log(metrics_data.get("meteor", 0.0))
-        triple_log_chrf = triple_log(metrics_data.get("chrf", 0.0)) * 0.1
+        triple_log_perp = triple_log(perp_val)
+        triple_log_bleu = triple_log(metrics_data.get("bleu", 0.0)) * 100
+        triple_log_rouge = triple_log(rouge_val) * 100
+        triple_log_meteor = triple_log(metrics_data.get("meteor", 0.0)) * 100
+        triple_log_chrf = triple_log(metrics_data.get("chrf", 0.0))
 
         new_item = {
             "name": model_name,
@@ -253,36 +234,6 @@ def performance():
     converted_data = convert_metrics_dict_to_list_triple_log_chrF_scaled(data)
     print(converted_data)
     return jsonify(converted_data)
-    return jsonify([
-            {"name": "koGPT2", "perplexity": 50.3, "BLEU": 52.2, "ROUGE": 46.3, "METEOR": 38.4, "chrF": 42.2},
-            {"name": "base fine-tuned", "perplexity": 45.2, "BLEU": 47.8, "ROUGE": 42.1, "METEOR": 35.2, "chrF": 38.9},
-            {"name": "SR", "perplexity": 40.1, "BLEU": 43.2, "ROUGE": 38.4, "METEOR": 31.5, "chrF": 35.3},
-            {"name": "RI", "perplexity": 35.8, "BLEU": 38.9, "ROUGE": 34.2, "METEOR": 28.1, "chrF": 31.6},
-            {"name": "RS", "perplexity": 31.2, "BLEU": 34.5, "ROUGE": 30.1, "METEOR": 24.8, "chrF": 27.9},
-            {"name": "RD", "perplexity": 26.9, "BLEU": 30.1, "ROUGE": 26.3, "METEOR": 21.4, "chrF": 24.2}
-        ])
-   
-
-    # # request를 통해 증강 종류 확인
-    # augment_type = request.args.get()
-
-    # # 증강 종류에 따라 model_id 지정
-    # model_type = ""
-    # data = "static/data/sample.csv" # perplexity 계산을 위한 데이터 셋 경로
-
-    # # 모델 경로 설정
-    # model_path = "models/"
-    # model_origin = model_path + "origin_model" # origin 모델 경로
-    # model_aug = model_path + model_type # aug 모델 경로
-
-    # # perplexity 계산
-    # perplexity_origin = calc_perplexity(model_origin,data)
-    # perplexity_augmented = calc_perplexity(model_aug,data)
-
-    # return jsonify({
-    #     "origin": perplexity_origin,
-    #     "aug": perplexity_augmented
-    # })
 
 REMOTE_SERVER_URL = "https://team-e.gpu.seongbum.com"
 REMOTE_SERVER_AUG_ROUTE = "/flask/augdata"
