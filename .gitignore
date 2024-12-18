@@ -161,5 +161,6 @@ cython_debug/
 
 
 font/
+static/data
 /py-hanspell
-*.csv
+REMOTE_SERVER/FLASK_FOLDER/model/chatbot_model.pth
