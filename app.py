@@ -135,9 +135,6 @@ REMOTE_SERVER_TSNE_ROUTE = "/flask/t-sne"
 class TSNEVisualization(Resource):
     @ns.doc('t_sne_visualization')
     def get(self):
-        #augmentation_type = request.get_json()
-        #print(augmentation_type)
-        
         try:
             # 원격 서버로 POST 요청
             response = requests.get(REMOTE_SERVER_URL + REMOTE_SERVER_TSNE_ROUTE)#, json=augmentation_type)
@@ -151,17 +148,6 @@ class TSNEVisualization(Resource):
                 "message":"fetch Done.",
                 "data":tsne_data
             }, 200
-            # JSON 데이터를 Pandas DataFrame으로 변환
-            #df = pd.DataFrame(tsne_data)
-            
-            # 데이터를 JSON 파일로 저장
-            #save_path = "static/json/"
-            #df.to_json(save_path + 'tsne_visualization.json', orient='records', indent=4, force_ascii=False)
-            
-            #return {
-            #    "message": "t-SNE visualization data saved successfully as JSON.",
-            #    "data_preview": df.head().to_dict(orient='records')  # 데이터 미리보기 반환
-            #}, 200
         except requests.exceptions.RequestException as e:
             # 요청 중 오류가 발생한 경우
             return {
@@ -174,7 +160,6 @@ class TSNEVisualization(Resource):
                 "message": "Invalid JSON response from remote server."
             }, 500
 
-import math
 
 def convert_metrics_dict_to_list_triple_log_chrF_scaled(metrics_dict):
     """
@@ -249,27 +234,6 @@ def performance():
     converted_data = convert_metrics_dict_to_list_triple_log_chrF_scaled(data)
     print(converted_data)
     return jsonify(converted_data)
-
-    # # request를 통해 증강 종류 확인   
-    # augment_type = request.args.get()
-
-    # # 증강 종류에 따라 model_id 지정
-    # model_type = ""
-    # data = "static/data/sample.csv" # perplexity 계산을 위한 데이터 셋 경로
-
-    # # 모델 경로 설정
-    # model_path = "models/"
-    # model_origin = model_path + "origin_model" # origin 모델 경로
-    # model_aug = model_path + model_type # aug 모델 경로
-
-    # # perplexity 계산
-    # perplexity_origin = calc_perplexity(model_origin,data)
-    # perplexity_augmented = calc_perplexity(model_aug,data)
-
-    # return jsonify({
-    #     "origin": perplexity_origin,
-    #     "aug": perplexity_augmented
-    # })
 
 REMOTE_SERVER_URL = "https://team-e.gpu.seongbum.com"
 REMOTE_SERVER_AUG_ROUTE = "/flask/augdata"
